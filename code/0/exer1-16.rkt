@@ -1,11 +1,10 @@
 #lang sicp
-(define (square n)
-  (* n n))
-
-(define (even? n)
-  (= (remainder n 2) 0))
 
 (define (fast-expt b n)
+  (define (square n)
+    (* n n))
+  (define (even? n)
+    (= (remainder n 2) 0))
   (define (iter a b counter)
     (cond ((= counter 0) a)
           ((even? counter) (iter a  (square b) (/ counter 2)))
