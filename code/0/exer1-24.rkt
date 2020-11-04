@@ -3,8 +3,8 @@
 ;;;   (/ a 2))
 
 (define (fast-prime? n times)
-  (define (square n) (* n n))
   (define (expmod base exp m)
+    (define (square n) (* n n))
     (cond ((= exp 0) 1)
           ((even? exp)
            (remainder
@@ -18,7 +18,6 @@
     (define (try-it a)
       (= (expmod a n n) a))
     (try-it (+ 1 (random (- n 1)))))
-    ;;; (try-it (- n 2)))
   (cond ((= times 0) true)
         ((fermat-test n) 
          (fast-prime? n (- times 1)))
@@ -37,11 +36,16 @@
     (if (prime? n)
         (report-prime (- (runtime) 
                        start-time))))
-    (newline)
-    (display n)
-    (start-prime-test (runtime)))
+  (cond ((prime? n)
+         (newline)
+         (display n)
+         (start-prime-test (runtime)))))
+  ;;; (newline)
+  ;;; (display n)
+  ;;; (start-prime-test (runtime)))
 
-(timed-prime-test 17)
+
+
 (timed-prime-test 1000003)
 (timed-prime-test 1000033)
 (timed-prime-test 1000037)
@@ -57,3 +61,5 @@
 (timed-prime-test 1000000007)
 (timed-prime-test 1000000009)
 (timed-prime-test 1000000021)
+
+
