@@ -24,4 +24,4 @@
          (fast-prime? n (- times 1)))
         (else false)))
 
-(fast-prime? 561 10000)
+(fast-prime? 561 10)

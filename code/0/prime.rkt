@@ -18,4 +18,4 @@
   
   (= n (smallest-divisor n)))
 
-(prime? 1999)
+(prime? 4)
