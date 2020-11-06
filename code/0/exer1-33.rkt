@@ -7,8 +7,17 @@
         (else (combiner (term a)
                         (filtered-accumulate-rec combiner null-value filter term (next a) next b)))))
 
+(define (filtered-accumulate-iter  combiner null-value filter term a next b)
+  (define (iter a res)
+    (cond ((> a b) res)
+          ((filter a)
+           (iter (next a) (combiner (term a) res)))
+          (else (iter (next a) res))))
+  (iter a null-value))
+  
 (define (filtered-accumulate  combiner null-value filter term a next b)
-  (filtered-accumulate-rec  combiner null-value filter term a next b))
+  ;;; (filtered-accumulate-rec  combiner null-value filter term a next b))
+  (filtered-accumulate-iter  combiner null-value filter term a next b))
 
 (define (prime? n)
   (define (square n) (* n n))
@@ -25,13 +34,25 @@
   (= n (smallest-divisor n)))
 
 (define (assignment-a a b)
-  (define (identity x)
-    x)
+  (define (square x)
+    (* x x))
   (define (inc x)
     (+ x 1))
-  (filtered-accumulate + 0 prime? identity a inc b))
+  (filtered-accumulate + 0 prime? square a inc b))
 
-;;; (assignment-a 2 3)
+(define (assignment-a-correct a b)
+  (define (square x)
+    (* x x))
+  (cond ((> a b) 0)
+        ((prime? a)
+         (+ (square a)
+            (assignment-a-correct (+ a 1) b)))
+        (else (assignment-a-correct (+ a 1) b))))
+
+(assignment-a 2 50)
+(assignment-a-correct 2 50)
+(assignment-a 10 120)
+(assignment-a-correct 10 120)
 
 (define (assignment-b n)
   (define (relatively-prime? i)
@@ -60,3 +81,5 @@
 
 (assignment-b 100)
 (assignment-b-correct 100)
+(assignment-b 69)
+(assignment-b-correct 69)
