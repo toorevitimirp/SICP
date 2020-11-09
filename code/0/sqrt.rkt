@@ -32,4 +32,4 @@
          (try (improve guess))))
   (try 1))
 
-(display(sqrt 2))
+(display(sqrt 2.0))
