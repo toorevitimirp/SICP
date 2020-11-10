@@ -24,15 +24,16 @@
   (newline))
 
 
-(define (hanoi-computer n from to temp)
-  (current-status n from to temp)
+(define (hanoi-rec n from to temp)
+  ;;; (current-status n from to temp)
   (cond ((= n 1) (move 1 from to))
-        (else (hanoi-computer (- n 1) from temp to)
+        (else (hanoi-rec (- n 1) from temp to)
               (move n from to)
-              (hanoi-computer (- n 1) temp to from))))
+              (hanoi-rec (- n 1) temp to from))))
 
 
-(define (hanoi-human from to temp n)
+(define (hanoi-iter-0 from to temp n)
   ("pass"))
 
-(hanoi-computer 5 "a" "c" "b")
+(hanoi-rec 5 "a" "c" "b")
+

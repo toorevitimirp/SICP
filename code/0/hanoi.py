@@ -1,52 +1,151 @@
 class Rod(object):
     def __init__(self,name, disks):
         self.name = name
-        self.disks_stack = disks
+        self.disks = disks
 
-class Hanoi(object):
 
-    def __init__(self, n):
-        self.n = n
+def solution0(n):
+    __steps__ = 0
+    __a__ = Rod('a',[n-i for i in range(n)])
+    __b__ = Rod('b',[])
+    __c__ = Rod('c',[])
 
-        self.from_ = Rod("a",[n-i for i in range(n)])
-        self.to = Rod("c",[])
-        self.temp = Rod("b",[])
-
-        self.count = 0
-
-    def introspect(self):
-        print(self.from_.name,end=":")
-        print(self.from_.disks_stack)
-
-        print(self.temp.name,end=":")
-        print(self.temp.disks_stack)
-
-        print(self.to.name,end=":")
-        print(self.to.disks_stack)
-        print("="*50)
-
-    def recursive_run(self):
-        def move(n, from_, to):
-            # print("%d:%s->%s"%(n, from_.name, to.name))
-            self.count += 1
-            disk = from_.disks_stack.pop()
-            to.disks_stack.append(disk)
-            self.introspect()
-
-        def wrapper(n, from_, to, temp):
-            if n==1:
-                move(n, from_, to)
+    def move(rod1,rod2):
+        from_, to = legal(rod1, rod2)
+        disk_to_move = from_.disks.pop()
+        to.disks.append(disk_to_move)
+        nonlocal __steps__
+        __steps__ += 1 
+        print("{}:{}->{}".format(disk_to_move,from_.name,to.name))
+    def legal(rod1, rod2):
+        rod1_disks = rod1.disks
+        rod2_disks = rod2.disks
+        if len(rod1_disks)==0:
+            from_ = rod2
+            to = rod1
+        elif len(rod2_disks)==0:
+            from_ = rod1
+            to = rod2
+        elif rod1_disks[-1] > rod2_disks[-1]:
+            from_ = rod2
+            to = rod1
+        else:
+            from_ = rod1
+            to = rod2
+        return from_, to
+    
+    def iter():
+        while len(__c__.disks) != n:
+            if n % 2 == 0:
+                try:
+                    move(__a__,__b__)
+                    move(__a__,__c__)
+                    move(__b__,__c__)
+                except:
+                    pass
             else:
-                wrapper(n-1, from_, temp, to)
-                move(n, from_, to)
-                wrapper(n-1, temp, to,from_)
-        self.introspect()
-        wrapper(self.n, self.from_,
-                self.to, self.temp)
+                try:
+                    move(__a__,__c__)
+                    move(__a__,__b__)
+                    move(__b__,__c__)
+                except:
+                    pass
 
-    def iter_run(self):
-        pass
+        print("done!")
+        print("steps:{}".format(__steps__))
+    iter()
 
-hanoi = Hanoi(5)
-hanoi.recursive_run()
-print(hanoi.count)
+
+def solution1(n):
+
+    __steps__ = 0
+    __a__ = Rod('a',[n-i for i in range(n)])
+    __b__ = Rod('b',[])
+    __c__ = Rod('c',[])
+    hand = __a__
+
+    def get_from():
+        nonlocal hand
+
+        candidates_from = []
+        for candidate in [__a__,__b__,__c__]:
+            if candidate != hand:
+                candidates_from.append(candidate)
+        
+        can_from_0 = candidates_from[0]
+        can_from_1 = candidates_from[1]
+
+        if len(can_from_0.disks) == 0:
+            from_ =can_from_1
+        elif len(can_from_1.disks) == 0:
+            from_ = can_from_0
+        else:
+            if can_from_0.disks[-1] < can_from_1.disks[-1]:
+                from_ = can_from_0
+
+            else:
+                from_ = can_from_1
+        return from_
+
+    def get_to(from_):
+        candidates_to = []
+        for candidate in [__a__,__b__,__c__]:
+            if candidate != from_:
+                candidates_to.append(candidate)
+        
+        can_to_0 = candidates_to[0]
+        can_to_1 = candidates_to[1]
+        if len(can_to_0.disks) == 0:
+            top_subtraction = can_to_1.disks[-1] - from_.disks[-1]
+            if top_subtraction < 0:
+                to = can_to_0
+            elif top_subtraction %2 == 0:
+                to = can_to_0 
+            else:
+                to = can_to_1
+        elif len(can_to_1.disks) == 0:
+            top_subtraction = can_to_0.disks[-1] - from_.disks[-1]
+            if top_subtraction < 0:
+                to = can_to_1
+            elif top_subtraction % 2 == 0:
+                to = can_to_1
+            else:
+                to = can_to_0
+        else:
+            top_subtraction = can_to_0.disks[-1] - from_.disks[-1]
+            if top_subtraction<0:
+                to = can_to_1
+            else:
+                top_subtraction = can_to_1.disks[-1] - from_.disks[-1]
+                if top_subtraction < 0:
+                    to = can_to_0
+                else:
+                    if top_subtraction % 2 == 1:
+                        to = can_to_1
+                    else:
+                        to = can_to_0
+        return to
+
+    def move(from_,to):
+        disk_to_move = from_.disks.pop()
+        to.disks.append(disk_to_move)
+
+        nonlocal __steps__
+        nonlocal hand
+        hand = to
+        __steps__ += 1 
+        print("{}:{}->{}".format(disk_to_move,from_.name,to.name))
+    
+    if n%2==1:
+        move(__a__,__c__)
+        hand = __c__
+    else:
+        move(__a__,__b__)
+        hand = __b__
+
+    while len(__c__.disks)<n:
+        from_ = get_from()
+        to = get_to(from_)
+        move(from_, to)
+    print("done!")
+    print("steps:{}".format(__steps__))
