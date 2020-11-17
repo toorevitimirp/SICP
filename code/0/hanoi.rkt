@@ -5,12 +5,13 @@
 
 (define (move n from to)
   (set! count (+ count 1))
+  (display "[")
   (display n)
   (display ": ")
   (display from)
   (display "->")
   (display to)
-  (newline))
+  (display "]  "))
 
 
 (define (current-status n from to temp)
@@ -35,5 +36,5 @@
 (define (hanoi-iter-0 from to temp n)
   ("pass"))
 
-(hanoi-rec 5 "a" "c" "b")
+(hanoi-rec 5 "A" "C" "B")
 
