@@ -1,19 +1,12 @@
 #lang sicp
 
-(define (accumulate op initial sequence)
-  (if (null? sequence)
-      initial
-      (op (car sequence)
-          (accumulate op 
-                      initial 
-                      (cdr sequence)))))
-(define (enumerate-interval low high)
-  (if (> low high)
-      nil
-      (cons low 
-            (enumerate-interval 
-             (+ low 1) 
-             high))))
+;;; (define (square a)
+;;;   (* a a))
 
-(define (flatmap proc seq)
-  (accumulate append nil (map proc seq)))
+;;; (define x 2)
+
+;;; ((lambda (x y)
+;;;   (* x y))
+;;;   3 (+ x 2))
+
+;;; ((lambda (x) (+ x (* x 10))) 3)
