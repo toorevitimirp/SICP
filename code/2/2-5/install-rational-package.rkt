@@ -52,6 +52,14 @@
   (put 'raise '(rational)
      (lambda (x) (make-real (/ (numer x)
                                (denom x)))))
+  (put '=zero? '(rational)
+       (lambda (x)
+         (= (numer x) 0)))
+  (put 'negative '(rational)
+       (lambda (x)
+         (tag (make-rat
+               (- (numer x))
+               (denom x)))))
   (put 'project '(rational)
      (lambda (r) (make-scheme-number
                   (round

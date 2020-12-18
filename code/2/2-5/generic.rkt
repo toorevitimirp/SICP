@@ -3,10 +3,12 @@
 (#%provide apply-generic raise
             project drop equ?
             make-scheme-number
-             make-rational
-             make-complex-from-real-imag
-             make-complex-from-mag-ang make-real
-             add sub div mul)
+            make-rational
+            make-complex-from-real-imag
+            make-complex-from-mag-ang make-real
+            add sub div mul
+            make-polynomial
+            =zero? negative)
 (#%require "type.rkt")
 (#%require "table.rkt")
 
@@ -88,6 +90,12 @@
 (define (make-real n)
   ((get 'make 'real) n))
 
+(define (make-polynomial var terms)
+  ((get 'make 'polynomial) var terms))
+
+(define (=zero? x)
+  (apply-generic '=zero? x))
+
 (define (add a1 a2)
   (apply-generic 'add a1 a2))
 
@@ -99,3 +107,6 @@
 
 (define (div a1 a2)
   (apply-generic 'div a1 a2))
+
+(define (negative a)
+  (apply-generic 'negative a))

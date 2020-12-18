@@ -24,6 +24,12 @@
   (put 'equ? '(scheme-number scheme-number)
        (lambda (x y)
          (= x y)))
+  (put '=zero? '(scheme-number)
+       (lambda (x)
+         (= x 0)))
+  (put 'negative '(scheme-number)
+       (lambda (x)
+         (tag(- x))))
   (put 'make 'scheme-number
        (lambda (x) (tag x)))
   'done)
