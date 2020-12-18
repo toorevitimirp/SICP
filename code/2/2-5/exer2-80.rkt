@@ -2,6 +2,7 @@
 
 (#%require "type.rkt")
 (#%require "table.rkt")
+(#%require "generic.rkt")
 (#%require "install-complex-package.rkt")
 (#%require "install-number-package.rkt")
 (#%require "install-rational-package.rkt")

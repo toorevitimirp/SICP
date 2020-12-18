@@ -2,6 +2,7 @@
 
 (#%require "type.rkt")
 (#%require "table.rkt")
+(#%require "generic.rkt")
 ;from http://community.schemewiki.org/?sicp-ex-2.82
 ; (define (apply-generic op . args) 
   

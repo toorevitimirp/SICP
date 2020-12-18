@@ -2,8 +2,10 @@
 
 (#%require "type.rkt")
 (#%require "table.rkt")
-(#%provide make-complex-from-real-imag
-           make-complex-from-mag-ang)
+(#%require "generic.rkt")
+
+;;;(#%provide make-complex-from-real-imag
+;;;           make-complex-from-mag-ang)
 
 (define (square x) (* x x))
 (define (real-part z) (apply-generic 'real-part z)) 
@@ -122,13 +124,21 @@
   (put 'div '(complex complex)
        (lambda (z1 z2) 
          (tag (div-complex z1 z2))))
+  (put 'equ? '(complex complex)
+       (lambda (x y)
+         (and (= (real-part x)
+                 (real-part y))
+              (= (imag-part x)
+                 (imag-part y)))))
   (put 'make-from-real-imag 'complex
        (lambda (x y) 
          (tag (make-from-real-imag x y))))
   (put 'make-from-mag-ang 'complex
        (lambda (r a) 
          (tag (make-from-mag-ang r a))))
-
+  (put 'project '(complex)
+       (lambda (c) (make-real
+                    ((get 'real-part '(complex)) c))))
   (put 'real-part '(complex) real-part)
   (put 'imag-part '(complex) imag-part)
   (put 'my-magnitude '(complex) my-magnitude)

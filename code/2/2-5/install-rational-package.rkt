@@ -2,7 +2,9 @@
 
 (#%require "type.rkt")
 (#%require "table.rkt")
-(#%provide make-rational)
+(#%require "generic.rkt")
+
+;;;(#%provide make-rational)
 (define (install-rational-package)
   ;; internal procedures
   (define (numer x) (car x))
@@ -24,6 +26,11 @@
   (define (div-rat x y)
     (make-rat (* (numer x) (denom y))
               (* (denom x) (numer y))))
+  (define (addd x y z) 
+       (make-rat (+ (* (numer x) (denom y) (denom z))
+                    (* (denom x) (numer y) (denom z))
+                    (* (denom x) (denom y) (numer z)))
+                 (* (denom x) (denom y) (denom z))))
   ;; interface to rest of the system
   (define (tag x) (attach-tag 'rational x))
   (put 'denom '(rational) denom)
@@ -36,6 +43,20 @@
        (lambda (x y) (tag (mul-rat x y))))
   (put 'div '(rational rational)
        (lambda (x y) (tag (div-rat x y))))
+  (put 'addd '(rational rational rational)
+       (lambda (x y z) (tag (addd x y z))))
+  (put 'equ? '(rational rational)
+       (lambda (x y)
+         (= (*(denom x) (numer y))
+            (*(denom y) (numer x)))))
+  (put 'raise '(rational)
+     (lambda (x) (make-real (/ (numer x)
+                               (denom x)))))
+  (put 'project '(rational)
+     (lambda (r) (make-scheme-number
+                  (round
+                   (/ (numer r)
+                      (denom r))))))
   (put 'make 'rational
        (lambda (n d) (tag (make-rat n d))))
   'done)

@@ -2,6 +2,7 @@
 
 (#%require "type.rkt")
 (#%require "table.rkt")
+(#%require "generic.rkt")
 
 (#%require "install-complex-package.rkt")
 (#%require "install-number-package.rkt")
@@ -29,6 +30,7 @@
 (define a3 (make-real 2.14))
 (define a4 (make-complex-from-real-imag 2 5))
 
-(raise a3)
-(raise a4)
+(raise a1)
+(raise a2)
+(raise (make-scheme-number 3))
 

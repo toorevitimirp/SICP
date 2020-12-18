@@ -2,7 +2,7 @@
 
 (#%require "type.rkt")
 (#%require "table.rkt")
-
+(#%require "generic.rkt")
 (define (square x) (* x x))
 (define (real-part z) (apply-generic 'real-part z)) 
 (define (imag-part z) (apply-generic 'imag-part z)) 

@@ -2,8 +2,9 @@
 
 (#%require "type.rkt")
 (#%require "table.rkt")
+(#%require "generic.rkt")
 
-(#%provide make-real)
+;;;(#%provide make-real)
 
 (define (install-real-package)
   (define (tag x)
@@ -16,6 +17,17 @@
        (lambda (x y) (tag (* x y))))
   (put 'div '(real real)
        (lambda (x y) (tag (/ x y))))
+  (put 'addd '(real real real)
+       (lambda (x y z) (tag (+ x y z))))
+  (put 'equ? '(real real)
+       (lambda (x y)
+         (= x y)))
+  (put 'raise '(real)
+     (lambda (x) (make-complex-from-real-imag x 0)))
+  (put 'project '(real)
+     (lambda (r) (make-rational
+                  (round r)
+                  1)))
   (put 'make 'real
        (lambda (x) (tag x)))
   'done)
