@@ -1,11 +1,12 @@
 #lang sicp
-
+ 
 (#%provide apply-generic raise
             project drop equ?
             make-scheme-number
             make-rational
             make-complex-from-real-imag
             make-complex-from-mag-ang make-real
+            my-angle my-magnitude my-imag-part my-real-part
             add sub div mul
             make-polynomial
             =zero? negative)
@@ -86,6 +87,11 @@
   ((get 'make-from-real-imag 'complex) x y))
 (define (make-complex-from-mag-ang r a)
   ((get 'make-from-mag-ang 'complex) r a))
+
+(define (my-real-part z) (apply-generic 'my-real-part z)) 
+(define (my-imag-part z) (apply-generic 'my-imag-part z)) 
+(define (my-magnitude z) (apply-generic 'my-magnitude z)) 
+(define (my-angle z) (apply-generic 'my-angle z))
 
 (define (make-real n)
   ((get 'make 'real) n))

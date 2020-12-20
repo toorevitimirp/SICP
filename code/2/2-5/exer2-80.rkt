@@ -20,7 +20,7 @@
          (= (numer x) 0)))
   (put '=zero? '(complex)
        (lambda (x y)
-         (= (magnitude x) 0)))
+         (= (my-magnitude x) 0)))
   'done)
 
 (install-=zero?-package)
