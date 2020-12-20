@@ -1,5 +1,7 @@
+#lang sicp
 ;;;http://community.schemewiki.org/?sicp-ex-2.86
-;; Converting data types to scheme-number 
+;; Converting data types to scheme-number
+
  (define (install-type->scheme-number-package) 
      ;; real -> scheme-number 
      (put 'get-scheme-number '(real) 

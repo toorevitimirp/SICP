@@ -148,11 +148,11 @@
   (put 'project '(complex)
        (lambda (c) (make-real
                     ((get 'real-part '(complex)) c))))
-  ;;;不应该提供这些选择函数的接口
-  ; (put 'my-real-part '(complex) my-real-part)
-  ; (put 'my-imag-part '(complex) my-imag-part)
-  ; (put 'my-magnitude '(complex) my-magnitude)
-  ; (put 'my-angle '(complex) my-angle)
+  ;;;书上没有提供这些选择函数的接口，因为封装的需要
+  (put 'my-real-part '(complex) my-real-part)
+  (put 'my-imag-part '(complex) my-imag-part)
+  (put 'my-magnitude '(complex) my-magnitude)
+  (put 'my-angle '(complex) my-angle)
   'done)
 
 (install-complex-package)
