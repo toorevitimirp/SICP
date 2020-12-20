@@ -12,12 +12,12 @@
   (let ((ord (order term))
         (coe (coeff term))
         (first (first-term term-list)))
-    (cond ((empty-termlist? termlist)
+    (cond ((empty-termlist? term-list)
            '())
           ((> ord (order first))
            (cons coe term-list))
           ((= ord (order first))
            (cons (+ coe (coeff first)) term-list))
           (else
-           (cons first (adjoin-term term (rest-terms termlist)))))))
+           (cons first (adjoin-term term (rest-terms term-list)))))))
           

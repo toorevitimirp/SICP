@@ -4,7 +4,8 @@
 (#%require "table.rkt")
 (#%require "generic.rkt")
 
-;;;(#%provide make-rational)
+; (#%provide make-rational)
+
 (define (install-rational-package)
   ;; internal procedures
   (define (numer x) (car x))

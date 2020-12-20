@@ -1,6 +1,6 @@
 #lang sicp
 
-;;;(#%provide make-scheme-number)
+; (#%provide make-scheme-number)
 
 (#%require "type.rkt")
 (#%require "table.rkt")

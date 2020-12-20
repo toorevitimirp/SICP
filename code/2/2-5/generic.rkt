@@ -1,15 +1,33 @@
 #lang sicp
- 
+;;;为什么要将通用操作集中到一个文件中,而不是将它们分散到各个包中?
+;;;为了避免环型依赖。例如real包的raise函数需要依赖complex包，而complex包的drop函数依赖real包。
+;;;我想不出其它的好办法。
 (#%provide apply-generic raise
             project drop equ?
             make-scheme-number
             make-rational
             make-complex-from-real-imag
-            make-complex-from-mag-ang make-real
-            my-angle my-magnitude my-imag-part my-real-part
+            make-complex-from-mag-ang
+            make-real
+            my-angle
+            my-magnitude
+            my-imag-part
+            my-real-part
             add sub div mul
-            make-polynomial
             =zero? negative)
+
+(#%provide make-term
+           order
+           coeff
+           the-empty-termlist
+           first-term
+           rest-terms
+           adjoin-term
+           empty-termlist?
+           make-dense-termlist
+           make-sparse-termlist
+           make-polynomial)
+
 (#%require "type.rkt")
 (#%require "table.rkt")
 
@@ -116,3 +134,25 @@
 
 (define (negative a)
   (apply-generic 'negative a))
+
+(define (adjoin-term term term-list)  
+  ((get 'adjoin-term (type-tag term-list))
+   term (contents term-list)))
+(define (first-term term-list)
+  (apply-generic 'first-term term-list)) 
+(define (rest-terms term-list)
+  (apply-generic 'rest-terms term-list))
+(define (empty-termlist? termlist)
+  (apply-generic 'empty-termlist? termlist))
+(define (the-empty-termlist)
+   ((get 'the-empty-termlist 'sparse)))
+
+(define (make-dense-termlist coeffs)
+  ((get 'make-termlist 'dense) coeffs))
+(define (make-sparse-termlist terms)
+  ((get 'make-termlist 'sparse) terms))
+
+(define (make-term order coeff) 
+  (list order coeff))
+(define (order term) (car term))
+(define (coeff term) (cadr term))
