@@ -1,6 +1,6 @@
 #lang sicp
 
-; (#%provide make-scheme-number)
+(#%provide make-scheme-number)
 
 (#%require "type.rkt")
 (#%require "table.rkt")
@@ -17,8 +17,6 @@
        (lambda (x y) (tag (* x y))))
   (put 'div '(scheme-number scheme-number)
        (lambda (x y) (tag (/ x y))))
-  (put 'raise '(scheme-number)
-     (lambda (x) (make-rational x 1)))
   (put 'addd '(integer integer integer)
        (lambda (x y z) (tag (+ x y z))))
   (put 'equ? '(scheme-number scheme-number)

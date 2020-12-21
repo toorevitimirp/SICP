@@ -4,7 +4,7 @@
 (#%require "table.rkt")
 (#%require "generic.rkt")
 
-;;;(#%provide make-real)
+(#%provide make-real)
 
 (define (install-real-package)
   (define (tag x)
@@ -28,20 +28,14 @@
   (put 'negative '(real)
        (lambda (x)
          (tag(- x))))
-  (put 'raise '(real)
-     (lambda (x) (make-complex-from-real-imag x 0)))
-  (put 'project '(real)
-     (lambda (r) (make-rational
-                  (round r)
-                  1)))
+
   (put 'make 'real
        (lambda (x)
-         (if (exact? x)
-             (exact->inexact x)
-             x)))
+          (if (exact? x)
+              (tag (exact->inexact x))
+              (tag x))))
   'done)
 
+(install-real-package)
 (define (make-real n)
   ((get 'make 'real) n))
-
-(install-real-package)

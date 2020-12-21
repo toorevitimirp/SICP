@@ -4,6 +4,8 @@
 (#%require "table.rkt")
 (#%require "generic.rkt")
 
+(#%require "install-polynomial-package.rkt")
+
 (define (first-term term-list)
   (make-term (- (length term-list) 1)
              (car term-list)))

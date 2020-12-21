@@ -10,6 +10,8 @@
 ;;;http://community.schemewiki.org/?sicp-ex-2.86
 ;; Converting data types to scheme-number
 
+(define square (lambda (x) (* x x)))
+
  (define (install-type->scheme-number-package) 
      ;; real -> scheme-number 
      (put 'get-scheme-number '(real) 
@@ -19,7 +21,8 @@
      (put 'get-scheme-number '(rational) 
          (lambda (r) 
              (make-scheme-number 
-                 (contents (div (numer r) (denom r)))))) 
+                 (contents (div ((get 'numer '(rational)) r)
+                                ((get 'denom '(rational)) r)))))) 
       
      ;; scheme-number -> scheme-number 
      (put 'get-scheme-number '(scheme-number) 

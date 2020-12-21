@@ -52,15 +52,7 @@
 (#%require "install-number-package.rkt")
 (#%require "install-real-package.rkt")
 (#%require "install-rational-package.rkt")
-
-
-(put 'raise '(scheme-number)
-     (lambda (x) (make-rational x 1)))
-(put 'raise '(rational)
-     (lambda (x) (make-real (/ ((get 'numer '(rational)) x)
-                               ((get 'denom '(rational)) x)))))
-(put 'raise '(real)
-     (lambda (x) (make-complex-from-real-imag x 0)))
+(#%require "install-raise-drop-package.rkt")
 
 (define a1 (make-scheme-number 42))
 (define a2 (make-rational 3 4))
@@ -76,8 +68,10 @@
 (addd a1 a2 a3)
 
 (addd (make-real 3.14159) (make-rational 3 4) (make-complex-from-real-imag 1 7))
-; ; (complex rectangular 4.89159 . 7)
+; (complex rectangular 4.89159 . 7)
 (addd (make-rational 1 2) (make-rational 1 4) (make-rational 1 8))
 ; (rational 7 . 8)
 (addd (make-scheme-number 42) (make-real 3.14159) (make-rational 2 5))
 ; (real . 45.54159)
+(make-scheme-number 4)
+(make-real 4.3)

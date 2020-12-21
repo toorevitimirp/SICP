@@ -4,14 +4,17 @@
 (#%require "table.rkt")
 (#%require "generic.rkt")
 
-; (#%provide  make-complex-from-real-imag
-;             make-complex-from-mag-ang
-;             make-real
-;             my-angle
-;             my-magnitude
-;             my-imag-part
-;             my-real-part)
+(#%provide  make-complex-from-real-imag
+            make-complex-from-mag-ang
+            my-angle
+            my-magnitude
+            my-imag-part
+            my-real-part)
 
+(define (my-real-part z) (apply-generic 'my-real-part z)) 
+(define (my-imag-part z) (apply-generic 'my-imag-part z)) 
+(define (my-magnitude z) (apply-generic 'my-magnitude z)) 
+(define (my-angle z) (apply-generic 'my-angle z))
 (define (square x) (* x x))
 
 (define (install-rectangular-package)
@@ -145,9 +148,7 @@
   (put 'make-from-mag-ang 'complex
        (lambda (r a) 
          (tag (make-from-mag-ang r a))))
-  (put 'project '(complex)
-       (lambda (c) (make-real
-                    (my-real-part c))))
+ 
   ;;;书上没有提供这些选择函数的接口，因为封装的需要
   (put 'my-real-part '(complex) my-real-part)
   (put 'my-imag-part '(complex) my-imag-part)

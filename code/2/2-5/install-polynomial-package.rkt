@@ -7,18 +7,17 @@
 (#%require "generic.rkt")
 
 
-; (#%provide make-term
-;            order
-;            coeff
-;            the-empty-termlist
-;            first-term
-;            rest-terms
-;            adjoin-term
-;            empty-termlist?
-;            make-dense-termlist
-;            make-sparse-termlist
-;            make-polynomial)
-
+(#%provide make-term
+           order
+           coeff
+           the-empty-termlist
+           first-term
+           rest-terms
+           adjoin-term
+           empty-termlist?
+           make-dense-termlist
+           make-sparse-termlist
+           make-polynomial)
 
   ;;representation of terms
 (define (make-term order coeff) 

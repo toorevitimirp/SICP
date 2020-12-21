@@ -8,29 +8,8 @@
             project
             drop
             equ?
-            make-scheme-number
-            make-rational
-            make-complex-from-real-imag
-            make-complex-from-mag-ang
-            make-real
-            my-angle
-            my-magnitude
-            my-imag-part
-            my-real-part
             add sub div mul
             =zero? negative)
-
-(#%provide make-term
-           order
-           coeff
-           the-empty-termlist
-           first-term
-           rest-terms
-           adjoin-term
-           empty-termlist?
-           make-dense-termlist
-           make-sparse-termlist
-           make-polynomial)
 
 (#%require "type.rkt")
 (#%require "table.rkt")
@@ -102,28 +81,6 @@
 (define (equ? x y)
   (apply-generic 'equ? x y))
 
-(define (make-scheme-number n)
-  ((get 'make 'scheme-number) n))
-
-(define (make-rational n d)
-  ((get 'make 'rational) n d))
-
-(define (make-complex-from-real-imag x y)
-  ((get 'make-from-real-imag 'complex) x y))
-(define (make-complex-from-mag-ang r a)
-  ((get 'make-from-mag-ang 'complex) r a))
-
-(define (my-real-part z) (apply-generic 'my-real-part z)) 
-(define (my-imag-part z) (apply-generic 'my-imag-part z)) 
-(define (my-magnitude z) (apply-generic 'my-magnitude z)) 
-(define (my-angle z) (apply-generic 'my-angle z))
-
-(define (make-real n)
-  ((get 'make 'real) n))
-
-(define (make-polynomial var terms)
-  ((get 'make 'polynomial) var terms))
-
 (define (=zero? x)
   (apply-generic '=zero? x))
 
@@ -141,25 +98,3 @@
 
 (define (negative a)
   (apply-generic 'negative a))
-
-(define (adjoin-term term term-list)  
-  ((get 'adjoin-term (type-tag term-list))
-   term (contents term-list)))
-(define (first-term term-list)
-  (apply-generic 'first-term term-list)) 
-(define (rest-terms term-list)
-  (apply-generic 'rest-terms term-list))
-(define (empty-termlist? termlist)
-  (apply-generic 'empty-termlist? termlist))
-(define (the-empty-termlist)
-   ((get 'the-empty-termlist 'sparse)))
-
-(define (make-dense-termlist coeffs)
-  ((get 'make-termlist 'dense) coeffs))
-(define (make-sparse-termlist terms)
-  ((get 'make-termlist 'sparse) terms))
-
-(define (make-term order coeff) 
-  (list order coeff))
-(define (order term) (car term))
-(define (coeff term) (cadr term))
