@@ -1,7 +1,4 @@
 #lang sicp
-;;;为什么要将通用操作集中到一个文件中,而不是将它们分散到各个包中?
-;;;为了避免环型依赖。例如real包的raise函数需要依赖complex包，而complex包的drop函数依赖real包。
-;;;我想不出其它的好办法。
 
 (#%provide  apply-generic
             raise
