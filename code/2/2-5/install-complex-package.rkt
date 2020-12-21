@@ -147,7 +147,7 @@
          (tag (make-from-mag-ang r a))))
   (put 'project '(complex)
        (lambda (c) (make-real
-                    ((get 'real-part '(complex)) c))))
+                    (my-real-part c))))
   ;;;书上没有提供这些选择函数的接口，因为封装的需要
   (put 'my-real-part '(complex) my-real-part)
   (put 'my-imag-part '(complex) my-imag-part)

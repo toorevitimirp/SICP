@@ -20,4 +20,11 @@
            (cons (+ coe (coeff first)) term-list))
           (else
            (cons first (adjoin-term term (rest-terms term-list)))))))
-          
+
+  ; (define (negative-termlist L)
+  ;   (if (empty-termlist? L)
+  ;       (the-empty-termlist)
+  ;       (adjoin-term
+  ;        (make-term (order (first-term L))
+  ;                   (negative (coeff (first-term L))))
+  ;        (negative-termlist (rest-terms L)))))

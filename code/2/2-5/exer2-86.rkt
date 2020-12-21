@@ -1,4 +1,12 @@
 #lang sicp
+(#%require "type.rkt")
+(#%require "table.rkt")
+(#%require "generic.rkt")
+
+(#%require "install-complex-package.rkt")
+(#%require "install-number-package.rkt")
+(#%require "install-real-package.rkt")
+(#%require "install-rational-package.rkt")
 ;;;http://community.schemewiki.org/?sicp-ex-2.86
 ;; Converting data types to scheme-number
 

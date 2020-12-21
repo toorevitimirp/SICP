@@ -7,7 +7,7 @@
 (#%require "install-number-package.rkt")
 (#%require "install-rational-package.rkt")
 
-(#%proive equ?)
+(#%provide equ?)
 (define (install-equ?-package)
   (define denom (get 'denom '(rational)))
   (define numer (get 'numer '(rational)))

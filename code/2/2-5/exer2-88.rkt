@@ -22,31 +22,34 @@
 
 (define inner-poly (make-polynomial 
                       'y
-                      (list
-                            (list 3 (make-complex-from-real-imag 3.5 -32))
-                            (list 2 (make-rational 5 2))
-                            (list 1 (make-rational -3 2))
-                            (list 0 (make-scheme-number 42)))))
-; inner-poly
+                      (make-sparse-termlist
+                       (list (list 3 (make-complex-from-real-imag 3.5 -32))
+                             (list 2 (make-rational 5 2))
+                             (list 1 (make-rational -3 2))
+                             (list 0 (make-scheme-number 42))))))
+  ; inner-poly
 ; (negative inner-poly)
 (define outer-poly (make-polynomial
                       'x
-                      (list (list 4 (make-rational 7 2))
-                            (list 3 (make-complex-from-real-imag 42 -13))
-                            (list 2 inner-poly)
-                            (list 0 (make-scheme-number 5)))))
+                      (make-sparse-termlist
+                       (list (list 4 (make-rational 7 2))
+                             (list 3 (make-complex-from-real-imag 42 -13))
+                             (list 2 inner-poly)
+                             (list 0 (make-scheme-number 5))))))
 ; outer-poly
 ; (negative outer-poly)
 
 (sub (make-polynomial 'x
-                        (list (list 4 (make-scheme-number 4))
-                              (list 2 (make-scheme-number 2))
-                              (list 0 (make-scheme-number 1))))
-       (make-polynomial 'x
-                        (list (list 4 (make-scheme-number 5))
-                              (list 3 (make-scheme-number 4))
-                              (list 1 (make-scheme-number 1))
-                              (list 0 (make-scheme-number 1)))))
+                      (make-sparse-termlist
+                       (list (list 4 (make-scheme-number 4))
+                             (list 2 (make-scheme-number 2))
+                             (list 0 (make-scheme-number 1)))))
+     (make-polynomial 'x
+                      (make-sparse-termlist
+                       (list (list 4 (make-scheme-number 5))
+                             (list 3 (make-scheme-number 4))
+                             (list 1 (make-scheme-number 1))
+                             (list 0 (make-scheme-number 1))))))
 ; (polynomial x (4 (integer . -1))
 ;               (3 (integer . -4))
 ;               (2 (integer . 2))

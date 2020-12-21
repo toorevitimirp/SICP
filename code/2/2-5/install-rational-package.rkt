@@ -51,8 +51,8 @@
          (= (*(denom x) (numer y))
             (*(denom y) (numer x)))))
   (put 'raise '(rational)
-     (lambda (x) (make-real (/ (numer x)
-                               (denom x)))))
+     (lambda (x)  (make-real (/ (numer x)
+                                (denom x)))))
   (put '=zero? '(rational)
        (lambda (x)
          (= (numer x) 0)))
@@ -63,9 +63,10 @@
                (denom x)))))
   (put 'project '(rational)
      (lambda (r) (make-scheme-number
-                  (round
-                   (/ (numer r)
-                      (denom r))))))
+                  (inexact->exact
+                   (round
+                    (/ (numer r)
+                       (denom r)))))))
   (put 'make 'rational
        (lambda (n d) (tag (make-rat n d))))
   'done)

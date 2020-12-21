@@ -20,19 +20,16 @@ class Tester(object):
 
     def run_programs(self):
         self._empty_report()
-        fns = self._program_files()
-        print(fns)
-        for fn in fns:
+        for fn in self._program_files():
             cmd = self.interpreter + " " + fn
-            # print(fn,":",end='')
+            print(fn)
             status, output = subprocess.getstatusoutput(cmd)
             self._report(fn, status, output)
     
     def _report(self, fn, status, output):
-        print("+"*70)
         print(fn,":",status)
-        print(status)
         print(output)
+        print("+"*50)
         # with open(self.report_fn, 'w+') as f: 
         #     f.writelines(fn+":"+str(status))       
         #     f.writelines(output)

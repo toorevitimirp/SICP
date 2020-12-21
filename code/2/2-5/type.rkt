@@ -23,7 +23,7 @@
         (else (cons typed-tag contents))))
 
 (define (type-tag datum)
-  (cond ((integer? datum)
+  (cond ((exact-integer? datum)
          'scheme-number)
         ((real? datum)
          'real)

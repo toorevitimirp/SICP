@@ -2,8 +2,12 @@
 ;;;为什么要将通用操作集中到一个文件中,而不是将它们分散到各个包中?
 ;;;为了避免环型依赖。例如real包的raise函数需要依赖complex包，而complex包的drop函数依赖real包。
 ;;;我想不出其它的好办法。
-(#%provide apply-generic raise
-            project drop equ?
+
+(#%provide  apply-generic
+            raise
+            project
+            drop
+            equ?
             make-scheme-number
             make-rational
             make-complex-from-real-imag
@@ -70,7 +74,10 @@
        (let ((highest (find-highest-type (map type-tag args))))
          (let ((new-args (raise-all highest args)))
            (let ((proc (get op (map type-tag new-args))))
-             (drop (apply proc (map contents new-args)))))))))
+             (if proc
+                 (drop (apply proc (map contents new-args)))
+                 (error "no method for these type :"  (list op (map type-tag new-args))))))))))
+
 
 (define (raise x)
   (let ((proc (get 'raise (list (type-tag x)))))

@@ -35,7 +35,10 @@
                   (round r)
                   1)))
   (put 'make 'real
-       (lambda (x) (tag x)))
+       (lambda (x)
+         (if (exact? x)
+             (exact->inexact x)
+             x)))
   'done)
 
 (define (make-real n)

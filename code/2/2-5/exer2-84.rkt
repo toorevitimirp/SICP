@@ -73,10 +73,10 @@
 ;;; test 2
 
 (define (addd a b c) (apply-generic 'addd a b c))
-; (addd a1 a2 a3)
+(addd a1 a2 a3)
 
 (addd (make-real 3.14159) (make-rational 3 4) (make-complex-from-real-imag 1 7))
-; (complex rectangular 4.89159 . 7)
+; ; (complex rectangular 4.89159 . 7)
 (addd (make-rational 1 2) (make-rational 1 4) (make-rational 1 8))
 ; (rational 7 . 8)
 (addd (make-scheme-number 42) (make-real 3.14159) (make-rational 2 5))

@@ -24,6 +24,10 @@
 ;   ...
 ;   'done)
 
-(=zero? (make-polynomial 'x (list (list 3 (make-real 0))
-                                  (list 2 (make-rational 0 5))
-                                  (list 1 (make-scheme-number 0)))))
+; (=zero? (make-polynomial 'x (list (list 3 (make-real 0))
+;                                   (list 2 (make-rational 0 5))
+;                                   (list 1 (make-scheme-number 0)))))
+(define termlist (make-sparse-termlist
+                          (list '(3 0) '(2 0) (list 1 (make-rational 0 3)))))
+(=zero? (make-polynomial 'x termlist))
+                         
