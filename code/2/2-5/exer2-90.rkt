@@ -26,6 +26,6 @@ a2
 (adjoin-term t2 a1)
 (adjoin-term t1 a2)
 (adjoin-term t2 a2)
-(the-empty-termlist)
+(the-empty-termlist a1)
 (empty-termlist? a1)
 (empty-termlist? a2)

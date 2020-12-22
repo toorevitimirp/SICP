@@ -1,10 +1,11 @@
 #lang sicp
 
+
 (#%require "type.rkt")
 (#%require "table.rkt")
+(#%require "variable.rkt")
 (#%require "generic.rkt")
-
-(#%require "install-polynomial-package.rkt")
+(#%require "install-polynomial-term-package.rkt")
 
 (define (install-dense-package)
   (define (adjoin-term term term-list)
@@ -43,6 +44,9 @@
            (make-term (- (length term-list) 1)
                    (car term-list)))))
   (define (rest-terms term-list)
+    ; (if (empty-termlist? term-list)
+    ;     false
+    ;     (cdr term-list)))
     (cond ((empty-termlist? term-list) '())
           ((= 1 (length term-list)) (cdr term-list))
           ((=zero? (car term-list))
@@ -51,6 +55,11 @@
   (define (empty-termlist? term-list)
     (or (null? term-list)
         (= 0 (apply + (map abs term-list)))))
+   ; (cond ((null? term-list)
+    ;       true)
+     ;     ((not (=zero? (car term-list)))
+      ;     false)
+       ;   (else (empty-termlist? (cdr term-list)))))
   (define (negative-termlist L)
     (if (= (length L) 0)
         (the-empty-termlist)
@@ -76,11 +85,4 @@
          (tag (make-termlist coeffs))))
   'done)
 
-
-  ; (define (negative-termlist L)
-  ;   (if (empty-termlist? L)
-  ;       (the-empty-termlist)
-  ;       (adjoin-term
-  ;        (make-term (order (first-term L))
-  ;                   (negative (coeff (first-term L))))
-  ;        (negative-termlist (rest-terms L)))))
+(install-dense-package)
