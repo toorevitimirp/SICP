@@ -139,7 +139,7 @@
                         L2)))
                   (list (adjoin-term (make-term new-o new-c )
                                      (car rest-of-result))
-                        (cdr rest-of-result))))))))
+                        (cadr rest-of-result))))))))
   
   ; (define (test-term-func)
   ;   (let (
