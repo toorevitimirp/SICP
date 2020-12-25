@@ -22,7 +22,7 @@
 (rand 'generate)
 (rand 'generate) 
 (rand 'generate)
-((rand 'reset) 199)
+((rand 'reset) 199 100)
 (rand 'generate) 
 (rand 'generate)
 (rand 'generate)
