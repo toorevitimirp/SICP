@@ -1,4 +1,14 @@
 #lang sicp
+
+(#%provide make-deque
+           empty-deque?
+           front-deque
+           rear-deque
+           front-insert-deque!
+           rear-insert-deque!
+           front-delete-deque!
+           rear-delete-deque!
+           display-deque)
 ;;;double linked list
 (define (decell pre value next)
   (list pre value next))
@@ -92,9 +102,18 @@
              (set-pre! (front-ptr deque) '())
              deque))))
 
+(define (display-deque deque)
+  (let ((front (front-ptr deque)))
+    (define (travel ptr)
+      (cond ((not (null? ptr))
+             (cons (value ptr)
+                   (travel (next ptr))))
+            (else '())))
+    (travel front)))
+
 ;;;test
-(define deq (make-deque)) 
-(front-insert-deque! deq 'a) 
-(front-insert-deque! deq 'b) 
-(rear-insert-deque! deq 'z) 
-(rear-insert-deque! deq 'y) 
+(define deq (make-deque))
+(display-deque(front-insert-deque! deq 'a))
+(display-deque(front-insert-deque! deq 'b))
+(display-deque(rear-insert-deque! deq 'z))
+(display-deque(rear-insert-deque! deq 'y))
