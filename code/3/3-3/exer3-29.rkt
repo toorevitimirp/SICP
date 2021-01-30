@@ -7,8 +7,8 @@
             (and-gate (inverter a1)
                       (inverter a2)))))
                      (set! output new-value)))
-  (add-action a1 or-action-procedure)
-  (add-action a2 or-action-procedure)
+  (add-action! a1 or-action-procedure)
+  (add-action! a2 or-action-procedure)
   'ok)
 
 ;;;or-gate-delay = inverter-delay*2 + and-gate-delay
