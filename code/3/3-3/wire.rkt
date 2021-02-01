@@ -31,7 +31,7 @@
     (define (accept-action-procedure! proc)
       (set! action-procedures 
             (cons proc action-procedures))
-      ;(proc)
+      (proc)
       )
     (define (dispatch m)
       (cond ((eq? m 'get-signal) 
