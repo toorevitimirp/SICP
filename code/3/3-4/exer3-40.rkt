@@ -2,69 +2,7 @@
 
 (#%require "../3-3/table.rkt")
 (#%require "tree.rkt")
-
-; (define (make-registers)
-;   (let ((registers (make-table))
-;         (reg-names '(r0 r1 r2 r3 r4 r5 r6 r7 r8 r9)))
-;     (define (init!)
-;       (define (iter names)
-;         (if (not (null? names))
-;             (begin
-;               (insert! (car names) 0 registers)
-;               (iter (cdr names)))))
-;       (iter reg-names))
-;     (define (get-reg reg-name)
-;       (if (memq reg-name reg-names)
-;           (lookup registers reg-name)
-;           (error "register does not exist" "GET-REG")))
-;     (define (set-reg! reg-name value)
-;       (if (memq reg-name reg-names)
-;           (insert! reg-name value registers)
-;           (error "register does not exist" "SET-REG!")))
-;     (define (dispatch m)
-;       (cond ((eq? m 'get-reg)
-;              get-reg)
-;             ((eq? m 'set-reg!)
-;              set-reg!)
-;             ((eq? m 'reset-reg!)
-;              init!)
-;             (else (error "Unknown operation: 
-;                           MAKE-REGISTER" m))))
-;     (init!)
-;     dispatch))
-
-; (define regs (make-registers))
-; (define (get-reg reg-name)
-;   ((regs 'get-reg) reg-name))
-; (define (set-reg! reg-name value)
-;   ((regs 'set-reg!) reg-name value))
-; (define (reset-reg!)
-;   ((regs 'reset-reg!)))
-
-(define (make-memory)
-  (let ((ram (make-table)))
-    (define (reset!)
-      ; (reset-regs!)
-      (set! ram (make-table)))
-    (define (access-var var-name)
-      (lookup ram var-name))
-    (define (set-var! var-name value)
-      (insert! var-name value ram))
-    (define (dispatch m)
-      (cond ((eq? m 'access-var) access-var)
-            ((eq? m 'set-var!) set-var!)
-            ((eq? m 'reset!) reset!)
-            (else (error "Unknown operation: 
-                          MAKE-RAM" m))))
-    dispatch))
-
-(define memo (make-memory))
-(define (reset!)
-  ((memo 'reset!)))
-(define (access-var var-name)
-  ((memo 'access-var) var-name))
-(define (set-var! var-name value)
-  ((memo 'set-var!) var-name value))
+(#%require "interpreter.rkt")
 
 ; (define (make-instruction-stream)
 ;   (let ((stream (list )))
@@ -99,18 +37,6 @@
 ;   ((stream 'rest)))
 ; (define (empty-stream? stream)
 ;   ((stream 'empty?)))
-
-(define (make-instruction-stream . ins)
-  ins)
-
-(define (first-ins stream)
-  (car stream))
-  
-(define (rest-ins stream)
-  (cdr stream))
-  
-(define (empty-stream? stream)
-  (null? stream))
 
 (define (generate-by-streams root streams)
   "todo")
@@ -154,36 +80,71 @@
     (walk tree '())
     results))
 
-(define (run all-paths)
+(define (solve all-paths)
   (define (iter path)
     (if (null? path)
         (begin
+          (newline)
           (display (access-var 'x))
-          (newline))
+          (newline)
+          (display "+++++++++++++++++++++++++++++++++++++++++++++++++++++++\n"))
         (begin
+          (display (car path))
+          (display "   ")
           ((car path))
           (iter (cdr path)))))
   (for-each iter all-paths))
 ;;;解决问题
 
-(define ins-tree (make-tree
-                  (lambda ()
-                    (set-var! 'x 10))))
+(define regs1 (make-registers))
+(define regs2 (make-registers))
 
-(define s1 (make-instruction-stream 
-            (lambda ()
-               (access-var 'x))
-            (lambda ()
-               (access-var 'x))
-            (lambda () (let ((x (access-var 'x)))
-                                  (set-var! 'x (* x x))))))
+(define a (lambda ()
+            (reset-regs! regs1)
+            (push-regs! regs1 'x)))
+(define b (lambda ()
+            (push-regs! regs1 'x)))
+(define c (lambda ()
+              (mutiply regs1)
+              (pop-regs! regs1 'x)))
 
-(define s2 (make-instruction-stream 
-            (lambda () (access-var 'x))
-            (lambda () (access-var 'x))
-            (lambda () (access-var 'x))
-            (lambda () (let ((x (access-var 'x)))
-             (set-var! 'x (* x x x))))))
+(define x (lambda ()
+            (reset-regs! regs2)
+            (push-regs! regs2 'x)))
+(define y (lambda ()
+            (push-regs! regs2 'x)))
+(define z (lambda ()
+            (push-regs! regs2 'x)))
+(define u (lambda ()
+              (mutiply regs2)
+              (pop-regs! regs2 'x)))
+
+(define s1 (make-instruction-stream a b c))
+(define s2 (make-instruction-stream x y z u))
+
+
+(define start
+  (lambda ()
+    (reset-memo!)
+    (set-var! 'x 10)))
+
+(define ins-tree (make-tree start))
 
 (generate-ins-tree s1 s2 ins-tree)
-(run (all-paths ins-tree))
+(define paths (all-paths ins-tree))
+(solve paths)
+; (define path (cadddr paths))
+; (define (iter path)
+;   (if (null? path)
+;       (begin
+;         (display (access-var 'x))
+;         (newline))
+;       (begin
+;         (display "+++++++++++++++++++\n")
+;         (display (car path))
+;         (newline)
+;         (display "+++++++++++++++++++\n")
+;         ((car path))
+;         (iter (cdr path)))))
+; path
+; (iter path)
