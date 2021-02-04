@@ -3,37 +3,6 @@
 (#%require "constraint.rkt")
 (#%require "connector.rkt")
 
-(define (reciprocal a b)
-   (define (process-new-value)
-      (if (has-value? b)
-          (if (= (get-value b) 0)
-              (error "reciprocal equals 0: 
-                      RECIPROCAL" 
-                      (get-value b))
-            (set-value! a (/ 1 (get-value b)) me))
-          (if (has-value? a)
-              (if (= (get-value a) 0)
-              (error "reciprocal equals 0: 
-                      RECIPROCAL" 
-                      (get-value a))
-              (set-value! b (/ 1 (get-value a)) me)))))
-   (define (process-forget-value)
-      (forget-value! b me)
-      (forget-value! a me)
-      (process-new-value))
-   (define (me request)
-      (cond ((eq? request 'I-have-a-value)
-             (process-new-value))
-            ((eq? request 'I-lost-my-value)
-             (process-forget-value))
-            (else
-             (error "Unknown request: 
-                     SQUARER" 
-                     request))))
-   (connect a me)
-   (connect b me)
-   me)
-
 (define (c+ x y)
   (let ((z (make-connector)))
     (adder x y z)
@@ -46,8 +15,10 @@
 
 (define (c/ x y)
    (let ((z (make-connector))
+         (one (make-connector))
          (1/y (make-connector)))
-     (reciprocal y 1/y)
+     (constant 1 one)
+     (multiplier y 1/y one)
      (multiplier x 1/y z)
      z))
 
