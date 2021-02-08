@@ -4,40 +4,6 @@
 (#%require "tree.rkt")
 (#%require "interpreter.rkt")
 
-; (define (make-instruction-stream)
-;   (let ((stream (list )))
-;     (define (add-ins! instruction)
-;       (set! stream (append stream (list instruction))))
-;     (define (first-ins)
-;       (car stream))
-;     (define (rest-ins)
-;       (if (null? stream)
-;           (begin
-;             (set! stream (list ))
-;             dispatch)
-;           (begin
-;             (set! stream (cdr stream))
-;             dispatch)))
-;     (define (empty-stream?)
-;       (null? stream))
-;     (define (dispatch m)
-;       (cond ((eq? m 'add!) add-ins!)
-;             ((eq? m 'first) first-ins)
-;             ((eq? m 'rest) rest-ins)
-;             ((eq? m 'empty?) empty-stream?)
-;             (else (error "Unknown operation: 
-;                           MAKE-INSTRUCTION-STREAM" m))))
-;     dispatch))
-
-; (define (add-ins! stream instruction)
-;   ((stream 'add!) instruction))
-; (define (first-ins stream)
-;   ((stream 'first)))
-; (define (rest-ins stream)
-;   ((stream 'rest)))
-; (define (empty-stream? stream)
-;   ((stream 'empty?)))
-
 (define (generate-by-streams root streams)
   "todo")
 
@@ -94,6 +60,7 @@
           ((car path))
           (iter (cdr path)))))
   (for-each iter all-paths))
+
 ;;;解决问题
 
 (define regs1 (make-registers))
@@ -122,7 +89,6 @@
 (define s1 (make-instruction-stream a b c))
 (define s2 (make-instruction-stream x y z u))
 
-
 (define start
   (lambda ()
     (reset-memo!)
@@ -133,18 +99,4 @@
 (generate-ins-tree s1 s2 ins-tree)
 (define paths (all-paths ins-tree))
 (solve paths)
-; (define path (cadddr paths))
-; (define (iter path)
-;   (if (null? path)
-;       (begin
-;         (display (access-var 'x))
-;         (newline))
-;       (begin
-;         (display "+++++++++++++++++++\n")
-;         (display (car path))
-;         (newline)
-;         (display "+++++++++++++++++++\n")
-;         ((car path))
-;         (iter (cdr path)))))
-; path
-; (iter path)
+

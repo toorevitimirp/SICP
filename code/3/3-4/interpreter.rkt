@@ -55,6 +55,41 @@
 ;   ((regs 'set-reg!) reg-name value))
 ; (define (reset-reg!)
 ;   ((regs 'reset-reg!)))
+
+; (define (make-instruction-stream)
+;   (let ((stream (list )))
+;     (define (add-ins! instruction)
+;       (set! stream (append stream (list instruction))))
+;     (define (first-ins)
+;       (car stream))
+;     (define (rest-ins)
+;       (if (null? stream)
+;           (begin
+;             (set! stream (list ))
+;             dispatch)
+;           (begin
+;             (set! stream (cdr stream))
+;             dispatch)))
+;     (define (empty-stream?)
+;       (null? stream))
+;     (define (dispatch m)
+;       (cond ((eq? m 'add!) add-ins!)
+;             ((eq? m 'first) first-ins)
+;             ((eq? m 'rest) rest-ins)
+;             ((eq? m 'empty?) empty-stream?)
+;             (else (error "Unknown operation: 
+;                           MAKE-INSTRUCTION-STREAM" m))))
+;     dispatch))
+
+; (define (add-ins! stream instruction)
+;   ((stream 'add!) instruction))
+; (define (first-ins stream)
+;   ((stream 'first)))
+; (define (rest-ins stream)
+;   ((stream 'rest)))
+; (define (empty-stream? stream)
+;   ((stream 'empty?)))
+
 (define (make-registers)
   (let ((regs (list )))
     (define (push-regs! x)
@@ -68,14 +103,7 @@
             (else (error "Unknown symbol: 
                          PUSH-REGS!" x))))
      (define (mutiply)
-        (define (iter p res l)
-          (if (null? l)
-              res
-              (iter p (p res (car l)) (cdr l))))
-        ; (display "+++++++++++++++++++\n")
-        ; (inspect-regs)
-        ; (display "+++++++++++++++++++\n")
-        (set! regs (list (iter * 1 regs))))
+        (set! regs (list (apply * regs))))
      (define (pop-regs! x)
        (cond ((not (symbol? x))
               (error "Not symbol:
