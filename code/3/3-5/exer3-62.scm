@@ -24,6 +24,10 @@
                     (1/s  (scale-stream s2 (/ 1 c)))))))
 
 ;;;test1
+
+(define (integrate-series s)
+  (mul-streams (stream-map / ones integers) s))
+
 (define exp-series
   (cons-stream 
    1 (integrate-series exp-series)))
@@ -60,14 +64,12 @@
 (define (my-cos x)
   (calcu-series cosine-series x))
 
-(define (my-tan x) ; x< pi/2才收敛
-  (define (x->converge-circle x)
-    (cond ((> x (/ pi 2))
-           (x->converge-circle (- x pi)))
-          ((< x (/ pi -2))
-           (x->converge-circle (+ x pi)))
-          (else x)))
-  (calcu-series tan-series (x->converge-circle x)))
+(define (my-tan x) ; |x|< pi/2才收敛
+  (cond ((> x (/ pi 2))
+         (my-tan (- x pi)))
+        ((< x (/ pi -2))
+         (my-tan (+ x pi)))
+        (else (calcu-series tan-series x))))
 
 (define (my-exp x)
   (calcu-series exp-series x))
