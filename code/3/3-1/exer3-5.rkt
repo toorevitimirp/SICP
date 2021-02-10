@@ -19,12 +19,8 @@
             (square (/ d 2)))))))
 
 (define (estimate-integral P x1 x2 y1 y2 trials)
-  (let ((r (/ (min (- x2 x1)
-                   (- y2 y1))
-              2))
-        (area (* (- x2 x1) (- y2 y1))))
-    (/ (* area (monte-carlo trials (P x1 x2 y1 y2)))
-       (square r))))
+  (let ((area (* (- x2 x1) (- y2 y1))))
+    (* area (monte-carlo trials (P x1 x2 y1 y2)))))
     
 (define (monte-carlo trials experiment)
   (define (iter trials-remaining trials-passed)
@@ -40,4 +36,4 @@
 
 (exact->inexact
           (estimate-integral
-           proc 2.0 8.0 4.0 10.0 100000))
+           proc -1.0 1.0 -1.0 1.0 1000000))
