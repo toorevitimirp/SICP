@@ -52,6 +52,8 @@
           ((eq? vals '())
            (error "too few arguments:
                                  PAIR-UP"))
+          ((symbol? vars);;;不懂
+           (cons (cons vars vals) '()))
           (else (cons (cons (car vals)
                             (car vals))
                       (pair-up (cdr vals)
