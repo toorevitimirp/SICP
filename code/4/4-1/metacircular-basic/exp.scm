@@ -1,56 +1,57 @@
 (load "derived-exp.scm")
-
 (define apply-in-underlying-scheme apply)
-(define (self-evaluating? exp)
-  (cond ((number? exp) true)
-        ((string? exp) true)
-        (else false)))
 
-(define (variable? exp) (symbol? exp))
-
-(define (quoted? exp)
-  (tagged-list? exp 'quote))
-
-(define (text-of-quotation exp)
-  (cadr exp))
-
+;;;util
 (define (tagged-list? exp tag)
   (if (pair? exp)
       (eq? (car exp) tag)
       false))
 
-(define (assignment? exp)
-  (tagged-list? exp 'set!))
+;;;number & string
+(define (self-evaluating? exp)
+  (cond ((number? exp) true)
+        ((string? exp) true)
+        (else false)))
 
-(define (assignment-variable exp) 
+;;;variable
+(define (variable? exp) (symbol? exp))
+
+;;;quotation
+(define (quoted? exp)
+  (tagged-list? exp 'quote))
+(define (text-of-quotation exp)
   (cadr exp))
 
+;;;assignment
+(define (assignment? exp)
+  (tagged-list? exp '=!))
+(define (assignment-variable exp) 
+  (cadr exp))
 (define (assignment-value exp) (caddr exp))
 
+;;;definition
 (define (definition? exp)
-  (tagged-list? exp 'define))
-
+  (tagged-list? exp ':=))
 (define (definition-variable exp)
   (if (symbol? (cadr exp))
       (cadr exp)
       (caadr exp)))
-
 (define (definition-value exp)
-  (display (caddr exp))
   (if (symbol? (cadr exp))
       (caddr exp)
       (make-lambda 
        (cdadr exp)   ; formal parameters
        (cddr exp)))) ; body
 
+;;;lambda
 (define (lambda? exp) 
   (tagged-list? exp 'lambda))
 (define (lambda-parameters exp) (cadr exp))
 (define (lambda-body exp) (cddr exp))
-
 (define (make-lambda parameters body)
   (cons 'lambda (cons parameters body)))
 
+;;;if
 (define (if? exp) (tagged-list? exp 'if))
 (define (if-predicate exp) (cadr exp))
 (define (if-consequent exp) (caddr exp))
@@ -58,7 +59,6 @@
   (if (not (null? (cdddr exp)))
       (cadddr exp)
       'false))
-
 (define (make-if predicate 
                  consequent 
                  alternative)
@@ -67,20 +67,20 @@
         consequent 
         alternative))
 
+;;;begin
 (define (begin? exp) 
   (tagged-list? exp 'begin))
 (define (begin-actions exp) (cdr exp))
 (define (last-exp? seq) (null? (cdr seq)))
 (define (first-exp seq) (car seq))
 (define (rest-exps seq) (cdr seq))
-
 (define (sequence->exp seq)
   (cond ((null? seq) seq)
         ((last-exp? seq) (first-exp seq))
         (else (make-begin seq))))
-
 (define (make-begin seq) (cons 'begin seq))
 
+;;;combination
 (define (application? exp) (pair? exp))
 (define (operator exp) (car exp))
 (define (operands exp) (cdr exp))
@@ -88,12 +88,15 @@
 (define (first-operand ops) (car ops))
 (define (rest-operands ops) (cdr ops))
 
+;;;bool
+(define true #t)
+(define false #f)
 (define (true? x)
   (not (eq? x false)))
-
 (define (false? x)
   (eq? x false))
 
+;;;procedure
 (define (make-procedure parameters body env)
   (list 'procedure parameters body env))
 (define (compound-procedure? p)
@@ -101,43 +104,5 @@
 (define (procedure-parameters p) (cadr p))
 (define (procedure-body p) (caddr p))
 (define (procedure-environment p) (cadddr p))
-
 (define (primitive-procedure? proc)
   (tagged-list? proc 'primitive))
-
-(define (primitive-implementation proc) 
-  (cadr proc))
-
-(define primitive-procedures
-  (list (list 'car car)
-        (list 'cdr cdr)
-        (list 'cons cons)
-        (list 'pair? pair?)
-        (list 'null? null?)
-        (list 'number? number?)
-        (list 'string? string?)
-        (list 'symbol? symbol?)
-        (list 'exit exit)
-        (list 'load load)
-        (list '+ + )
-        (list '- - )
-        (list '* * )
-        (list '/ / )
-        
-        ))
-
-  
-(define (primitive-procedure-names)
-  (map car primitive-procedures))
-
-(define (primitive-procedure-objects)
-  (map (lambda (proc) 
-         (list 'primitive (cadr proc)))
-       primitive-procedures))
-
-(define (apply-primitive-procedure proc args)
-  (apply-in-underlying-scheme
-   (primitive-implementation proc) args))
-
-(define (apply-primitive-procedure proc args)
-  ((primitive-implementation proc) args))

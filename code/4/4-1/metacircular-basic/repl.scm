@@ -1,17 +1,16 @@
 (load "setup.scm")
 ; (define input-prompt  ";;; M-Eval input:")
 ; (define output-prompt ";;; M-Eval value:")
-(define input-prompt  "in[")
-(define output-prompt "out[")
+(define input-prompt  "λ[")
+(define output-prompt "=>[")
 
 (define (pretty-read)
-  (display "_> ")
+  (display "> ")
   (read))
 
 (define (driver-loop in-count out-count)
   (prompt-for-input in-count input-prompt)
-  (let ((input (read)))
-    (display (car input))
+  (let ((input (pretty-read)))
     (let ((output 
            (eval input 
                  the-global-environment)))
@@ -23,11 +22,10 @@
   (newline)
   (newline)
   ; (display "_____________________________________")
-  (newline)
+  ;(newline)
   (display string)
   (display in-count)
   (display "]: ")
-  (newline)
   (newline)
   )
 
