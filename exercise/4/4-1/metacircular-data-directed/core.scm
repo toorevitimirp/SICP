@@ -9,7 +9,7 @@
                      (get 'eval-dispatch (type-exp exp))))
                 (if eval-dispatch
                     (begin
-                      ; (display "basic syntax\n")
+                      ; (display "basic or derived expression\n")
                       (eval-dispatch exp env))
                     (if (application? exp)
                         (apply (eval (operator exp) env)

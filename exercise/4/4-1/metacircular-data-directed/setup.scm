@@ -46,4 +46,6 @@
 (define the-global-environment 
   (setup-environment))
 
+;;;for inspectation
+(define g the-global-environment)
 

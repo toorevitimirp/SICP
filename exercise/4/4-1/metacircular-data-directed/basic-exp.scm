@@ -7,9 +7,15 @@
 (define (self-evaluating? exp)
   (cond ((number? exp) true)
         ((string? exp) true)
+        ((eq? exp '#t) true)
+        ((eq? exp '#f) true)
         (else false)))
 
 ;;;variable
+; (variable? 'true) => true
+; (variable? 'false) => true
+; (variable? '#t) => false
+; (variable? '#t) => false
 (define (variable? exp) (symbol? exp))
 
 ;;;quotation
@@ -19,6 +25,7 @@
     (cadr exp))
   (put 'eval-dispatch keyword text-of-quotation)
   "installed quotation")
+(install-quotation)
 
 ;;;assignment
 (define (install-assignment)
@@ -34,6 +41,7 @@
     "<#assignment return#>")
   (put 'eval-dispatch keyword eval-assignment)
   "installed assignment")
+(install-assignment)
 
 ;;;definition
 (define (install-definition)
@@ -56,6 +64,7 @@
     "<#definition return#>")
   (put 'eval-dispatch keyword eval-definition)
   "installed definition")
+(install-definition)
 
 ;;;lambda
 (define (install-lambda)
@@ -72,6 +81,7 @@
   (put 'make-lambda keyword make-lambda)
   (put 'eval-dispatch keyword eval-lambda)
   "installed lambda")
+ (install-lambda)
 
 ;;;if
 (define (installed-if)
@@ -96,6 +106,7 @@
   (put 'make-if keyword make-if)
   (put 'eval-dispatch keyword eval-if)
   "install if")
+(installed-if)
 
 ;;;begin & sequence
 (define (install-sequence)
@@ -123,8 +134,52 @@
   (put 'eval-sequence keyword eval-sequence)
   (put 'eval-dispatch keyword eval-begin)
   "installed sequence")
+(install-sequence)
+
+; ;;;and
+; (define (install-and)
+;   (define keyword 'and)
+;   (define (and-actions exp) (cdr exp))
+;   (define (no-exp? seq) (null? seq))
+;   (define (last-exp? seq) (null? (cdr seq)))
+;   (define (first-exp seq) (car seq))
+;   (define (rest-exps seq) (cdr seq))
+;   (define (eval-and-seq seq env)
+;     (cond ((no-exp? seq)
+;            true)
+;           ((last-exp? seq)
+;            (eval (first-exp seq) env))
+;           (else
+;            (if (eval (first-exp seq) env)
+;                (eval-and-seq (rest-exps seq) env)
+;                false))))
+;   (define (eval-and exp env)
+;     (eval-and-seq (and-actions exp) env))
+;   (put 'eval-dispatch keyword eval-and)
+;   "installed and")
+; (install-and)
+    
+; ;;;or
+; (define (install-or)
+;   (define keyword 'or)
+;   (define (or-actions exp) (cdr exp))
+;   (define (no-exp? seq) (null? seq))
+;   (define (first-exp seq) (car seq))
+;   (define (rest-exps seq) (cdr seq))
+;   (define (eval-or-seq seq env)
+;     (if (no-exp? seq)
+;         false
+;         (if (eval (first-exp seq) env)
+;             true
+;             (eval-or-seq (rest-exps seq) env))))
+;   (define (eval-or exp env)
+;     (eval-or-seq (or-actions exp) env))
+;   (put 'eval-dispatch keyword eval-or)
+;   "installed or")
+; (install-or)
 
 ;;;bool
+;下面两行为了兼容gambit
 (define true #t)
 (define false #f)
 (define (true? x)
@@ -157,12 +212,3 @@
 (define (procedure-environment p) (cadddr p))
 (define (primitive-procedure? proc)
   (tagged-list? proc 'primitive))
-
-
-;;;install syntax
-(install-quotation)
-(install-assignment)
-(install-definition)
-(install-lambda)
-(installed-if)
-(install-sequence)

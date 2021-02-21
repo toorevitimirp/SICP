@@ -4,6 +4,9 @@
 ## metacircular-basic：
 课本上的代码，只修改了prompt。
 
+## metacircular-data-directed：
+完成4.1.2节的习题后的求值器。
+
 ## 编译
 * 尝试用chicken scheme将scheme代码编译成c或可执行代码，未成功。 
 * 尝试用gambit 将这些分散的scheme代码编译成c或可执行代码，未成功，因为我不会链接。
