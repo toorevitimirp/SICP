@@ -11,6 +11,7 @@
         (list 'symbol? symbol?)
         (list 'exit exit)
         (list 'load load)
+        (list 'display display)
         (list '= =)
         (list '> >)
         (list '< <)
@@ -27,6 +28,7 @@
   (map (lambda (proc) 
          (list 'primitive (cadr proc)))
        primitive-procedures))
+
 (define (apply-primitive-procedure proc args)
   (apply-in-underlying-scheme
    (primitive-implementation proc) args))
@@ -43,3 +45,5 @@
 
 (define the-global-environment 
   (setup-environment))
+
+

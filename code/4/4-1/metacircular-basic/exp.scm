@@ -1,4 +1,4 @@
-(load "derived-exp.scm")
+(load "env.scm")
 (define apply-in-underlying-scheme apply)
 
 ;;;util
@@ -24,14 +24,20 @@
 
 ;;;assignment
 (define (assignment? exp)
-  (tagged-list? exp '=!))
+  (tagged-list? exp 'set!))
 (define (assignment-variable exp) 
   (cadr exp))
 (define (assignment-value exp) (caddr exp))
-
+(define (eval-assignment exp env)
+  (set-variable-value! 
+   (assignment-variable exp)
+   (eval (assignment-value exp) env)
+   env)
+  "<assignment return>"
+  )
 ;;;definition
 (define (definition? exp)
-  (tagged-list? exp ':=))
+  (tagged-list? exp 'define))
 (define (definition-variable exp)
   (if (symbol? (cadr exp))
       (cadr exp)
@@ -42,7 +48,13 @@
       (make-lambda 
        (cdadr exp)   ; formal parameters
        (cddr exp)))) ; body
-
+(define (eval-definition exp env)
+  (define-variable! 
+    (definition-variable exp)
+    (eval (definition-value exp) env)
+    env)
+  "<definition return>"
+  )
 ;;;lambda
 (define (lambda? exp) 
   (tagged-list? exp 'lambda))
@@ -66,6 +78,11 @@
         predicate 
         consequent 
         alternative))
+(define (eval-if exp env)
+  ;;;这里可以调用eval？
+  (if (true? (eval (if-predicate exp) env))
+      (eval (if-consequent exp) env)
+      (eval (if-alternative exp) env)))
 
 ;;;begin
 (define (begin? exp) 
@@ -79,14 +96,27 @@
         ((last-exp? seq) (first-exp seq))
         (else (make-begin seq))))
 (define (make-begin seq) (cons 'begin seq))
-
-;;;combination
+(define (eval-sequence exps env)
+  (cond ((last-exp? exps) 
+         (eval (first-exp exps) env))
+        (else 
+         (eval (first-exp exps) env)
+         (eval-sequence (rest-exps exps) 
+                        env))))
+;;;application
 (define (application? exp) (pair? exp))
 (define (operator exp) (car exp))
 (define (operands exp) (cdr exp))
 (define (no-operands? ops) (null? ops))
 (define (first-operand ops) (car ops))
 (define (rest-operands ops) (cdr ops))
+(define (list-of-values exps env)
+  (if (no-operands? exps)
+      '()
+      (cons (eval (first-operand exps) env)
+            (list-of-values 
+             (rest-operands exps) 
+             env))))
 
 ;;;bool
 (define true #t)
@@ -106,3 +136,33 @@
 (define (procedure-environment p) (cadddr p))
 (define (primitive-procedure? proc)
   (tagged-list? proc 'primitive))
+
+;;;cond
+(define (cond? exp) 
+  (tagged-list? exp 'cond))
+(define (cond-clauses exp) (cdr exp))
+(define (cond-else-clause? clause)
+  (eq? (cond-predicate clause) 'else))
+(define (cond-predicate clause) 
+  (car clause))
+(define (cond-actions clause) 
+  (cdr clause))
+(define (cond->if exp)
+  (expand-clauses (cond-clauses exp)))
+(define (expand-clauses clauses)
+  (if (null? clauses)
+      'false     ; no else clause
+      (let ((first (car clauses))
+            (rest (cdr clauses)))
+        (if (cond-else-clause? first)
+            (if (null? rest)
+                (sequence->exp 
+                 (cond-actions first))
+                (error "ELSE clause isn't 
+                        last: COND->IF"
+                       clauses))
+            (make-if (cond-predicate first)
+                     (sequence->exp 
+                      (cond-actions first))
+                     (expand-clauses 
+                      rest))))))
