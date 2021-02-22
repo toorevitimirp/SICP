@@ -47,5 +47,5 @@
   (setup-environment))
 
 ;;;for inspectation
-(define g the-global-environment)
+(define env the-global-environment)
 

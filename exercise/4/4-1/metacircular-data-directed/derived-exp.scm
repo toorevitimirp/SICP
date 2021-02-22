@@ -19,23 +19,28 @@
         'false     ; no else clause
         (let ((first (car clauses))
               (rest (cdr clauses)))
-          (if (cond-else-clause? first)
-              (if (null? rest)
-                  (sequence->exp
-                   (cond-actions first))
-                  (error "ELSE clause isn't 
-                         last: COND->IF"
-                         clauses))
-              (make-if
-               (cond-predicate first)
-               (sequence->exp
-                (cond-actions first))
-                       (expand-clauses 
-                        rest))))))
+          (cond ((cond-else-clause? first)
+                 (if (null? rest)
+                     (sequence->exp
+                      (cond-actions first))
+                     (error "ELSE clause isn't 
+                            last: COND->IF"
+                            clauses)))
+                ((eq? (car (cond-actions first)) '=>)
+                 (if (null? (cdr (cond-actions first)))
+                     (error "Ill-formed syntax: (cond (... =>) ...)")
+                     (let ((test (cond-predicate first))
+                           (recipient (cadr (cond-actions first))))
+                       (make-if test
+                                (list recipient test)
+                                (expand-clauses rest)))))
+                 (else
+                  (make-if (cond-predicate first)
+                           (sequence->exp
+                            (cond-actions first))
+                           (expand-clauses rest)))))))
   (define (eval-cond exp env)
-    ((get 'eval-dispatch 'if)
-     (cond->if exp)
-     env))
+    (eval_ (cond->if exp) env))
   (put 'eval-dispatch 'cond eval-cond)
   "installed cond")
 (install-cond)
@@ -44,7 +49,6 @@
 (define (install-and)
   (define keyword 'and)
   (define make-if (get 'make-if 'if))
-  (define eval-if (get 'eval-dispatch 'if))
   (define (last-seq? seq) (null? (cdr seq)))
   (define (and-seq exp) (cdr exp))
   (define (first-seq seq) (car seq))
@@ -52,8 +56,7 @@
   (define (and->if exp)
     (expand-seq (and-seq exp)))
   (define (expand-seq seq)
-    (cond ((null? seq)
-           (make-if true true false))
+    (cond ((null? seq) true)
           ((last-seq? seq)
            (make-if (first-seq seq) (first-seq seq) false))
           (else (make-if
@@ -61,9 +64,7 @@
                   (expand-seq (rest-seq seq))
                   false))))
   (define (eval-and exp env)
-    (eval-if
-     (and->if exp)
-     env))
+    (eval_ (and->if exp) env))
   (put 'eval-dispatch keyword eval-and)
   "installed and")
 (install-and)
@@ -79,14 +80,82 @@
   (define (rest-seq seq) (cdr seq))
   (define (expand-seq seq)
     (if (no-seq? seq)
-        (make-if false false false)
+        false
         (make-if (first-seq seq)
                  true
                  (expand-seq (rest-seq seq)))))
   (define (or->if exp)
     (expand-seq (or-seq exp)))
   (define (eval-or exp env)
-    (eval-if (or->if exp) env))
+    (eval_ (or->if exp) env))
   (put 'eval-dispatch keyword eval-or)
   "installed or")
 (install-or)
+
+;;;let
+(define (install-let)
+  (define keyword 'let)
+  (define sequence->exp (get 'sequence->exp 'begin))
+  (define make-lambda (get 'make-lambda 'lambda))
+  (define make-define (get 'make-define 'define))
+  (define (named-let? exp) (symbol? (cadr exp)))
+  (define (let-clauses exp)
+    (if (named-let? exp)
+        (caddr exp)
+        (cadr exp)))
+  (define (let-body exp)
+    (if (named-let? exp)
+        (cdddr exp)
+        (cddr exp)))
+  (define (first-clause clauses) (car clauses))
+  (define (rest-clauses clauses) (cdr clauses))
+  (define (clause-var clause) (car clause))
+  (define (clause-exp clause) (cadr clause))
+  (define (let->combination exp)
+    (let ((clauses (let-clauses exp))
+          (body (let-body exp)))
+      (let ((vars (map clause-var clauses))
+            (exps (map clause-exp clauses)))
+        (if (named-let? exp)
+            (list
+             (make-lambda
+               '()
+               (list (sequence->exp
+                      (list (make-define (cadr exp)
+                                         (make-lambda vars body))
+                       (make-application (cadr exp) exps))))))
+            (cons (make-lambda vars body) exps)))))
+  (define (eval-let exp env)
+    (let ((exp (let->combination exp)))
+      (eval_ exp env)))
+  (define (make-let clauses body)
+    (list keyword clauses body))
+  (put 'make-let keyword make-let)
+  (put 'eval-dispatch keyword eval-let)
+  "installed let")
+
+(install-let)
+
+;;;let*
+(define (install-let*)
+  (define keyword 'let*)
+  (define make-let (get 'make-let 'let))
+  (define sequence->exp (get 'sequence->exp 'begin))
+  (define (let*-clauses exp) (cadr exp))
+  (define (let*-body exp) (cddr exp))
+  (define (first-clause clauses) (car clauses))
+  (define (rest-clauses clauses) (cdr clauses))
+  (define (no-clauses? clauses) (null? clauses))
+  (define (expand-clauses clauses body)
+    (if (no-clauses? clauses)
+        (sequence->exp body)
+        (make-let
+        (list (first-clause clauses))
+          (expand-clauses (rest-clauses clauses) body))))
+  (define (let*->nested-lets exp)
+    (expand-clauses (let*-clauses exp) (let*-body exp)))
+  (define (eval-let* exp env)
+    (eval_ (let*->nested-lets exp) env))
+  (put 'eval-dispatch keyword eval-let*)
+  "installed let*")
+(install-let*)

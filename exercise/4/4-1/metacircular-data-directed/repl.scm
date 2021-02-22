@@ -2,7 +2,7 @@
 ; (define input-prompt  ";;; M-Eval input:")
 ; (define output-prompt ";;; M-Eval value:")
 (define input-prompt  "λ[")
-(define output-prompt "=>[")
+(define output-prompt "]=>  ")
 
 (define (pretty-read)
   (display "> ")
@@ -12,7 +12,7 @@
   (prompt-for-input in-count input-prompt)
   (let ((input (pretty-read)))
     (let ((output 
-           (eval input 
+           (eval_ input 
                  the-global-environment)))
       (announce-output out-count output-prompt)
       (user-print output)))
@@ -31,10 +31,11 @@
 
 (define (announce-output out-count string)
   (newline)
-  (display string)
+  (display "[")
   (display out-count)
-  (display "]: ")
-  (newline))
+  (display string)
+  (newline)
+  )
 
 (define (user-print object)
   (if (compound-procedure? object)

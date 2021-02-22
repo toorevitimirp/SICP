@@ -1,6 +1,6 @@
 (load "derived-exp.scm")
 
-(define (eval exp env)
+(define (eval_ exp env)
   (cond ((self-evaluating? exp) 
          exp)
         ((variable? exp) 
@@ -12,14 +12,14 @@
                       ; (display "basic or derived expression\n")
                       (eval-dispatch exp env))
                     (if (application? exp)
-                        (apply (eval (operator exp) env)
+                        (apply_ (eval_ (operator exp) env)
                                (list-of-values 
                                 (operands exp) 
                                 env))
                         (error "Unknown expression 
                                type: EVAL" exp)))))))
 
-(define (apply procedure arguments)
+(define (apply_ procedure arguments)
   (cond ((primitive-procedure? procedure)
          (apply-primitive-procedure 
           procedure 
