@@ -9,7 +9,6 @@
                      (get 'eval-dispatch (type-exp exp))))
                 (if eval-dispatch
                     (begin
-                      ; (display "basic or derived expression\n")
                       (eval-dispatch exp env))
                     (if (application? exp)
                         (apply_ (eval_ (operator exp) env)
@@ -25,7 +24,7 @@
           procedure 
           arguments))
         ((compound-procedure? procedure)
-         ((get 'eval-sequence 'begin)
+         (eval-sequence
           (procedure-body procedure)
           (extend-environment
              (procedure-parameters 

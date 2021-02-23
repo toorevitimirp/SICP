@@ -1,7 +1,9 @@
 (load "utils.scm")
 (load "env.scm")
 
+
 (define apply-in-underlying-scheme apply)
+
 
 ;;;number & string
 (define (self-evaluating? exp)
@@ -11,12 +13,14 @@
         ((eq? exp '#f) true)
         (else false)))
 
+
 ;;;variable
 ; (variable? 'true) => true
 ; (variable? 'false) => true
 ; (variable? '#t) => false
 ; (variable? '#t) => false
 (define (variable? exp) (symbol? exp))
+
 
 ;;;quotation
 (define (install-quotation)
@@ -26,6 +30,7 @@
   (put 'eval-dispatch keyword text-of-quotation)
   "installed quotation")
 (install-quotation)
+
 
 ;;;assignment
 (define (install-assignment)
@@ -41,7 +46,9 @@
     "#assignment")
   (put 'eval-dispatch keyword eval-assignment)
   "installed assignment")
+
 (install-assignment)
+
 
 ;;;definition
 (define (install-definition)
@@ -67,7 +74,10 @@
   (put 'make-define keyword make-define)
   (put 'eval-dispatch keyword eval-definition)
   "installed definition")
+
 (install-definition)
+(define make-define (get 'make-define 'define))
+
 
 ;;;lambda
 (define (install-lambda)
@@ -79,12 +89,20 @@
      (lambda-parameters exp)
      (lambda-body exp)
      env))
+  ;;;将带有define表达式用无参lambda包裹起来，防止其污染当前环境。
+  (define (wrap-with-lambda exp)
+    (list (make-lambda '() (sequence->exp exp))))
   (define (make-lambda parameters body)
     (cons 'lambda (cons parameters body)))
   (put 'make-lambda keyword make-lambda)
+  (put 'wrap-with-lambda keyword wrap-with-lambda)
   (put 'eval-dispatch keyword eval-lambda)
   "installed lambda")
- (install-lambda)
+
+(install-lambda)
+(define make-lambda (get 'make-lambda 'lambda))
+(define wrap-with-lambda (get 'wrap-with-lambda 'lambda))
+
 
 ;;;if
 (define (installed-if)
@@ -111,12 +129,14 @@
   (put 'make-if keyword make-if)
   (put 'eval-dispatch keyword eval-if)
   "install if")
-(installed-if)
 
-;;;begin & sequence
+(installed-if)
+(define make-if (get 'make-if 'if))
+
+
+;;;sequence
 (define (install-sequence)
-  (define keyword 'begin)
-  (define (begin-actions exp) (cdr exp))
+  (define keyword 'sequence)
   (define (last-exp? seq) (null? (cdr seq)))
   (define (first-exp seq) (car seq))
   (define (rest-exps seq) (cdr seq))
@@ -124,7 +144,6 @@
     (cond ((null? seq) seq)
           ((last-exp? seq) (first-exp seq))
           (else (make-begin seq))))
-  (define (make-begin seq) (cons 'begin seq))
   (define (eval-sequence exps env)
     (cond ((last-exp? exps)
            (eval_ (first-exp exps) env))
@@ -132,14 +151,29 @@
            (eval_ (first-exp exps) env)
            (eval-sequence (rest-exps exps) 
                           env))))
+  (put 'sequence->exp keyword sequence->exp)
+  (put 'eval-sequence keyword eval-sequence)
+  "installed sequence")
+
+(install-sequence)
+(define sequence->exp (get 'sequence->exp 'sequence))
+(define eval-sequence (get 'eval-sequence 'sequence))
+
+
+;;;begin
+(define (install-begin)
+  (define keyword 'begin)
+  (define (begin-actions exp) (cdr exp))
+  (define (make-begin seq) (cons 'begin seq))
   (define (eval-begin exp env)
     (eval-sequence (begin-actions exp) env))
   (put 'make-begin keyword make-begin)
-  (put 'sequence->exp keyword sequence->exp)
-  (put 'eval-sequence keyword eval-sequence)
   (put 'eval-dispatch keyword eval-begin)
-  "installed sequence")
-(install-sequence)
+  "installed begin")
+
+(install-begin)
+(define make-begin (get 'make-begin 'begin))
+
 
 ; ;;;and
 ; (define (install-and)
@@ -183,6 +217,21 @@
 ;   "installed or")
 ; (install-or)
 
+;;;while
+;(while (< i 10) (display i) (set! i (+ i 1)))
+; (define (install-while)
+;   (define keyword 'while)
+;   (define (while-predicate exp) (cadr exp))
+;   (define (while-actions exp) (cddr exp))
+;   (define (eval-while exp env)
+;     (if (true? (eval_ (while-predicate exp) env))
+;         (begin (eval-sequence (while-actions exp) env)
+;                (eval-while exp env))
+;         "#while"))
+;   (put 'eval-dispatch keyword eval-while)
+;   "installed while")
+; (install-while)
+
 ;;;bool
 ;下面两行为了兼容gambit
 (define true #t)
@@ -191,7 +240,6 @@
   (not (eq? x false)))
 (define (false? x)
   (eq? x false))
-
 ;;;application
 (define (application? exp) (pair? exp))
 (define (operator exp) (car exp))
@@ -199,7 +247,7 @@
 (define (no-operands? ops) (null? ops))
 (define (first-operand ops) (car ops))
 (define (rest-operands ops) (cdr ops))
-(define (make-application proc-name args) (cons proc-name args))
+(define (make-application-call proc-name args) (cons proc-name args))
 (define (list-of-values exps env)
   (if (no-operands? exps)
       '()

@@ -1,10 +1,9 @@
-;;;cond
 (load "basic-exp.scm")
 
+
+;;;cond
 (define (install-cond)
   (define keyword 'cond)
-  (define make-if (get 'make-if 'if))
-  (define sequence->exp (get 'sequence->exp 'begin))
   (define (cond-clauses exp) (cdr exp))
   (define (cond-else-clause? clause)
     (eq? (cond-predicate clause) 'else))
@@ -45,10 +44,10 @@
   "installed cond")
 (install-cond)
 
+
 ;;;and
 (define (install-and)
   (define keyword 'and)
-  (define make-if (get 'make-if 'if))
   (define (last-seq? seq) (null? (cdr seq)))
   (define (and-seq exp) (cdr exp))
   (define (first-seq seq) (car seq))
@@ -72,8 +71,6 @@
 ;;;or
 (define (install-or)
   (define keyword 'or)
-  (define make-if (get 'make-if 'if))
-  (define eval-if (get 'eval-dispatch 'if))
   (define (no-seq? seq) (null? seq))
   (define (or-seq exp) (cdr exp))
   (define (first-seq seq) (car seq))
@@ -95,9 +92,6 @@
 ;;;let
 (define (install-let)
   (define keyword 'let)
-  (define sequence->exp (get 'sequence->exp 'begin))
-  (define make-lambda (get 'make-lambda 'lambda))
-  (define make-define (get 'make-define 'define))
   (define (named-let? exp) (symbol? (cadr exp)))
   (define (let-clauses exp)
     (if (named-let? exp)
@@ -123,7 +117,7 @@
                (list (sequence->exp
                       (list (make-define (cadr exp)
                                          (make-lambda vars body))
-                       (make-application (cadr exp) exps))))))
+                       (make-application-call (cadr exp) exps))))))
             (cons (make-lambda vars body) exps)))))
   (define (eval-let exp env)
     (let ((exp (let->combination exp)))
@@ -135,12 +129,12 @@
   "installed let")
 
 (install-let)
+(define make-let (get 'make-let 'let))
+
 
 ;;;let*
 (define (install-let*)
   (define keyword 'let*)
-  (define make-let (get 'make-let 'let))
-  (define sequence->exp (get 'sequence->exp 'begin))
   (define (let*-clauses exp) (cadr exp))
   (define (let*-body exp) (cddr exp))
   (define (first-clause clauses) (car clauses))
@@ -159,3 +153,36 @@
   (put 'eval-dispatch keyword eval-let*)
   "installed let*")
 (install-let*)
+
+
+;;;while
+;(while (< i 10) (display i) (set! i (+ i 1)))
+; ((lambda ()
+;    (begin
+;      (define while-func
+;        (lambda () (if (< i 10) (begin(display i) (set! i (+ i 1)) (while-func) "#while"))))
+;      (while-func))))
+(define (install-while)
+  (define keyword 'while)
+  (define (while-predicate exp) (cadr exp))
+  (define (while-actions exp) (cddr exp))
+  (define (wrap-with-lambda exp) (list (make-lambda '() (sequence->exp exp))))
+  (define (while->combination exp)
+    (let ((proc-name 'while-proc))
+      (wrap-with-lambda
+        (list
+         (list (make-define proc-name
+                            (make-lambda
+                              '()
+                              (list (make-if (while-predicate exp)
+                                       (append
+                                        (cons 'begin (while-actions exp))
+                                        (list (list proc-name)))
+                                       "#while"))))
+               (make-application-call proc-name '()))))))
+  (define (eval-while exp env)
+    (eval_ (while->combination exp) env))
+  (put 'eval-dispatch keyword eval-while)
+  "installed while")
+
+(install-while)

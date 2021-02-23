@@ -45,6 +45,9 @@
                (fib-iter (+ a b) 
                      a 
                      (- count 1))))                 ;55
+        '(define i 0)                               ;#definition
+        '(while (< i 10)
+            (display i) (set! i (+ i 1)))           ;0123456789#while
   ))
 
 (define (test-each exps)
