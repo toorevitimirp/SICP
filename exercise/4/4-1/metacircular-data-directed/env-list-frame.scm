@@ -1,16 +1,35 @@
 (load "utils.scm")
+
+
+;;;环境的表示
 (define (enclosing-environment env) (cdr env))
 (define (first-frame env) (car env))
 (define the-empty-environment '())
 
-(define (make-frame variables values)
-  (cons variables values))
-(define (frame-variables frame) (car frame))
-(define (frame-values frame) (cdr frame))
-(define (add-binding-to-frame! var val frame)
-  (set-car! frame (cons var (car frame)))
-  (set-cdr! frame (cons val (cdr frame))))
 
+;;;frame 的表示
+;represent a frame as a list of bindings
+; (define (make-frame variables values)
+;   (map cons variables values))
+;为什么上述定义不行？(add-binding-to-frame var val the-empty-frame)
+(define (make-frame variables values)
+  (cons 'frame
+        (map cons variables values)))
+(define (frame-bindings frame)
+  (cdr frame))
+(define (frame-variables frame)
+  (map car (frame-bindings frame)))
+(define (frame-values frame)
+  (map cdr (frame-bindings frame)))
+(define (add-binding-to-frame! var val frame)
+  (let ((new-binding (cons var val)))
+    (set-cdr! frame
+              (cons new-binding
+                    (frame-bindings frame)))))
+
+
+;;;环境的操作
+;represent a frame as a list of bindings
 (define (extend-environment vars vals base-env)
   (if (= (length vars) (length vals))
       (cons (make-frame vars vals) base-env)
@@ -41,30 +60,26 @@
 
 (define (set-variable-value! var val env)
   (define (env-loop env)
-    (define (scan vars vals)
-      (cond ((null? vars)
+    (define (scan bindings)
+      (cond ((null? bindings)
              (env-loop 
               (enclosing-environment env)))
-            ((eq? var (car vars))
-             (set-car! vals val))
-            (else (scan (cdr vars) 
-                        (cdr vals)))))
+            ((eq? var (caar bindings))
+             (set-cdr! (car bindings) val))
+            (else (scan (cdr bindings)))))
     (if (eq? env the-empty-environment)
         (error "Unbound variable: SET!" var)
         (let ((frame (first-frame env)))
-          (scan (frame-variables frame)
-                (frame-values frame)))))
+          (scan (frame-bindings frame)))))
   (env-loop env))
 
 (define (define-variable! var val env)
-  (let ((frame (first-frame env)))
-    (define (scan vars vals)
-      (cond ((null? vars)
+  (let ((the-frame (first-frame env)))
+    (define (scan bindings)
+      (cond ((null? bindings)
              (add-binding-to-frame! 
-              var val frame))
-            ((eq? var (car vars))
-             (set-car! vals val))
-            (else (scan (cdr vars) 
-                        (cdr vals)))))
-    (scan (frame-variables frame)
-          (frame-values frame))))
+              var val the-frame))
+            ((eq? var (caar bindings))
+             (set-cdr! (car bindings) val))
+            (else (scan (cdr bindings)))))
+    (scan (frame-bindings the-frame))))
