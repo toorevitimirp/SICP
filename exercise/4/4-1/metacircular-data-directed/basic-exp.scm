@@ -78,6 +78,19 @@
 (define make-define (get 'make-define 'define))
 
 
+;;;undefine
+(define (install-undefine)
+  (define keyword 'undef)
+  (define (undefine-variable exp) (cadr exp))
+  (define (eval-undefine exp env)
+    (make-unbound! (undefine-variable exp)
+                  env)
+    "#undefine")
+  (put 'eval-dispatch keyword eval-undefine)
+  "installed undefine")
+(install-undefine)
+
+
 ;;;lambda
 (define (install-lambda)
   (define keyword 'lambda)

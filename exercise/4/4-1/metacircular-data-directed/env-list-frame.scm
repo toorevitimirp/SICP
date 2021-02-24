@@ -83,3 +83,17 @@
              (set-cdr! (car bindings) val))
             (else (scan (cdr bindings)))))
     (scan (frame-bindings the-frame))))
+
+(define (make-unbound! var env)
+  (let ((frame (first-frame env)))
+    (define (scan bindings pre-bindings)
+      (cond ((null? bindings)
+             (error "Unbound variable: MAKE-UNBOUND!" var))
+            ((eq? var (caar bindings))
+             (append pre-bindings (cdr bindings)))
+            (else (scan (cdr bindings)
+                        (append pre-bindings
+                                (list (car bindings)))))))
+    (let ((new-bindings
+           (scan (frame-bindings frame) '())))
+      (set-cdr! frame new-bindings))))

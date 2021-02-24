@@ -6,6 +6,8 @@
         (list 'cons cons)
         (list 'pair? pair?)
         (list 'null? null?)
+        (list 'eq? eq?)
+        (list 'equal? equal?)
         (list 'number? number?)
         (list 'string? string?)
         (list 'symbol? symbol?)

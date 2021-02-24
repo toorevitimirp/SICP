@@ -135,3 +135,51 @@
 ;                (make-application-call proc-name '()))))))
 
 ; (define exp '(while (< i 10) (display i) (set! i (+ i 1))))
+
+
+; (define (remove-elment e li pre)
+;   (cond ((null? li)
+;          "not exist")
+;         ((eq? e (car li))
+;          (append pre (cdr li)))
+;         (else (remove-elment e
+;                              (cdr li)
+;                              (append pre (list (car li)))))))
+
+; (define (remove e li)
+;   (remove-elment e li '()))
+; (define li '(a b c))
+
+; (define (ub! var frame)
+;   (define (scan vars vals pre-vars pre-vals)
+;     (cond ((null? vars)
+;            (error "Unbound variable: MAKE-UNBOUND!"))
+;           ((eq? var (car vars))
+;              (cons (append pre-vars (cdr vars))
+;                    (append pre-vals (cdr vals))))
+;           (else (scan (cdr vars) (cdr vals)
+;                       (append pre-vars (list (car vars)))
+;                       (append pre-vals (list (car vals)))))))
+  
+;   (let ((new-frame (scan (frame-variables frame)
+;                          (frame-values frame)
+;                          '()
+;                          '())))
+;     (set-car! frame (car new-frame))
+;     (set-cdr! frame (cdr new-frame))))
+(define (ub! var frame)
+  (define (scan bindings pre-bindings)
+    (cond ((null? bindings)
+           (error "Unbound variable: MAKE-UNBOUND!" var))
+          ((eq? var (caar bindings))
+           (append pre-bindings (cdr bindings)))
+          (else (scan (cdr bindings)
+                      (append pre-bindings
+                              (list (car bindings)))))))
+    (let ((new-bindings
+           (scan (frame-bindings frame) '())))
+      (set-cdr! frame new-bindings)))
+
+(define f1 (make-frame '() '()))
+(define f2 (make-frame '(x) '(1)))
+(define f3 (make-frame '(x y z) '(1 2 3)))

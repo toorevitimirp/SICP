@@ -84,7 +84,7 @@
       (cond ((null? vars)
              (on-frame-end))
             ((eq? var (car vars))
-             (on-find vals))
+             (on-find vars vals))
             (else (scan (cdr vars) 
                         (cdr vals)))))
     (if (eq? env the-empty-environment)
@@ -101,7 +101,7 @@
               (lookup-variable-value
                var
                (enclosing-environment env)))
-            (lambda (vals) (car vals))
+            (lambda (vars vals) (car vals))
             (lambda (var) (error "Unbound variable" var))))
 
 (define (set-variable-value! var val env)
@@ -112,7 +112,7 @@
                var
                val
                (enclosing-environment env)))
-            (lambda (vals) (set-car! vals val))
+            (lambda (vars vals) (set-car! vals val))
             (lambda (var) (error "Unbound variable: SET!" var))))
 
 (define (define-variable! var val env)
@@ -123,9 +123,28 @@
                var
                val
                (first-frame env)))
-            (lambda (vals) (set-car! vals val))
+            (lambda (vars vals) (set-car! vals val))
             (lambda (var)
               (add-binding-to-frame!
                var
                val
                (first-frame env)))))
+
+(define (make-unbound! var env)
+  (let ((frame (first-frame env)))
+    (define (scan vars vals pre-vars pre-vals)
+      (cond ((null? vars)
+             (error "Unbound variable: MAKE-UNBOUND!" var))
+            ((eq? var (car vars))
+             (cons (append pre-vars (cdr vars))
+                   (append pre-vals (cdr vals))))
+            (else (scan (cdr vars) (cdr vals)
+                        (append pre-vars (list (car vars)))
+                          (append pre-vals (list (car vals)))))))
+    
+    (let ((new-frame (scan (frame-variables frame)
+                           (frame-values frame)
+                           '()
+                           '())))
+      (set-car! frame (car new-frame))
+      (set-cdr! frame (cdr new-frame)))))
