@@ -77,7 +77,8 @@
         '(define i 0)                               ;#definition
         '(while (< i 10)
             (display i) (set! i (+ i 1)))           ;0123456789#while
-  ))
+        '(let () (* x x))                            
+        ))
 
 (define res
   (list
@@ -109,6 +110,7 @@
         55
         "#definition"
         "#while"
+        4
         ))
 
 

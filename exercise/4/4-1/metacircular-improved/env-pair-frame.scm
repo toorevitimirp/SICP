@@ -101,7 +101,11 @@
               (lookup-variable-value
                var
                (enclosing-environment env)))
-            (lambda (vars vals) (car vals))
+            (lambda (vars vals)
+              (car vals))
+              ; (if (eq? (car vals) '*unassigned*)
+              ;     (error "*unassigned*")
+              ;     (car vals)))
             (lambda (var) (error "Unbound variable" var))))
 
 (define (set-variable-value! var val env)

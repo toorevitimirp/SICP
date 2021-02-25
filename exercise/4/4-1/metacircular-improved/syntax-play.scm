@@ -3,7 +3,7 @@
 ; (define (make-let clauses body)
 ;     (list 'let clauses body))
 ; (define (let*-clauses exp) (cadr exp))
-; (define (let*-body exp) (caddr exp));;;注意和install-let的let-body比较
+; (define (let*-body exp) (caddr exp))
 ; (define (first-clause clauses) (car clauses))
 ; (define (rest-clauses clauses) (cdr clauses))
 ; (define (no-clauses? clauses) (null? clauses))
@@ -137,19 +137,6 @@
 ; (define exp '(while (< i 10) (display i) (set! i (+ i 1))))
 
 
-; (define (remove-elment e li pre)
-;   (cond ((null? li)
-;          "not exist")
-;         ((eq? e (car li))
-;          (append pre (cdr li)))
-;         (else (remove-elment e
-;                              (cdr li)
-;                              (append pre (list (car li)))))))
-
-; (define (remove e li)
-;   (remove-elment e li '()))
-; (define li '(a b c))
-
 ; (define (ub! var frame)
 ;   (define (scan vars vals pre-vars pre-vals)
 ;     (cond ((null? vars)
@@ -167,19 +154,115 @@
 ;                          '())))
 ;     (set-car! frame (car new-frame))
 ;     (set-cdr! frame (cdr new-frame))))
-(define (ub! var frame)
-  (define (scan bindings pre-bindings)
-    (cond ((null? bindings)
-           (error "Unbound variable: MAKE-UNBOUND!" var))
-          ((eq? var (caar bindings))
-           (append pre-bindings (cdr bindings)))
-          (else (scan (cdr bindings)
-                      (append pre-bindings
-                              (list (car bindings)))))))
-    (let ((new-bindings
-           (scan (frame-bindings frame) '())))
-      (set-cdr! frame new-bindings)))
+; (define (ub! var frame)
+;   (define (scan bindings pre-bindings)
+;     (cond ((null? bindings)
+;            (error "Unbound variable: MAKE-UNBOUND!" var))
+;           ((eq? var (caar bindings))
+;            (append pre-bindings (cdr bindings)))
+;           (else (scan (cdr bindings)
+;                       (append pre-bindings
+;                               (list (car bindings)))))))
+;     (let ((new-bindings
+;            (scan (frame-bindings frame) '())))
+;       (set-cdr! frame new-bindings)))
 
-(define f1 (make-frame '() '()))
-(define f2 (make-frame '(x) '(1)))
-(define f3 (make-frame '(x y z) '(1 2 3)))
+; (define f1 (make-frame '() '()))
+; (define f2 (make-frame '(x) '(1)))
+; (define f3 (make-frame '(x y z) '(1 2 3)))
+
+; (define (remove e li pre)
+;   (cond ((null? li)
+;          "not exist")
+;         ((eq? e (car li))
+;          (append pre (cdr li)))
+;         (else (remove e
+;                       (cdr li)
+;                       (append pre (list (car li)))))))
+
+; (define (remove-elment e li)
+;   (remove e li '()))
+
+; (define (internal-body body) (cddr body))
+
+; (define (all-defines internal)
+;   (cond ((null? internal) '())
+;   ((tagged-list? (car internal) 'define)
+;    (cons (cons (definition-variable (car internal))
+;                (list (definition-value (car internal))))
+;          (all-defines (cdr internal))))
+;   (else (all-defines (cdr internal)))))
+
+; (define (value-exprs internal)
+;   (cond ((null? internal) '())
+;   ((tagged-list? (car internal) 'define)
+;    (value-exprs (cdr internal)))
+;   (else (cons (car internal)
+;               (value-exprs (cdr internal))))))
+
+; (define (scan-out-defines body)
+;   (let ((defines (all-defines body))
+;         (values (value-exprs  body)))
+;     (if (null? defines)
+;      body
+;      (list (make-let
+;       (map (lambda (p)
+;              (list (car p)
+;                    '*unassigned*))
+;            defines)
+;       (sequence->exp
+;        (append (map (lambda (p)
+;                       (list 'set! (car p) (cadr p)))
+;                     defines)
+;                values)))))))
+
+
+; (define exp0
+;   '(
+;      (+ 1 1)
+;      (define (even? n)
+;        (if (= n 0)
+;         true
+;         (odd? (- n 1))))
+;      (even? n)
+;      (define (odd? n)
+;        (if (= n 0)
+;         false
+;         (even? (- n 1)))))
+;   )
+
+; (define exp1
+;   '(
+;      (define u (e1))
+;      (+ 1 1)
+;      (define v (e2))
+;      (e3))
+; )
+; (define exp2 '((lambda (x) (* x x)) x))
+
+; '(define fib
+;     (lambda (n)
+;       (define (fib-iter a b count)
+;           (if (= count 0)
+;           b
+;           (fib-iter (+ a b) a (- count 1))))
+;            (fib-iter 1 0 n)))
+
+; (define fib
+;     (lambda (n)
+;       (let ((fib-iter '*unassigned*))
+;         (set! fib-iter
+;               (lambda (a b count)
+;                 (if (= count 0)
+;                 b
+;                 (fib-iter (+ a b) a (- count 1)))))
+;         (fib-iter 1 0 n))))
+
+; (define fib
+;     (lambda (n)
+;       (let fib-iter ((a 1) (b 0) (count n))
+;         (if (= count 0)
+;             b
+;             (fib-iter (+ a b) 
+;                   a 
+;                   (- count 1))))))

@@ -4,7 +4,7 @@
 ## metacircular-basic：
 课本上的代码，只修改了prompt。
 
-## metacircular-data-directed：
+## metacircular-improved：
 完成4.1节的习题后的求值器。
 
 ## 编译

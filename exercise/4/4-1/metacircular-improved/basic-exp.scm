@@ -61,7 +61,7 @@
   (define (definition-value exp)
     (if (symbol? (cadr exp))
         (caddr exp)
-        ((get 'make-lambda 'lambda) 
+        (make-lambda
           (cdadr exp)   ; formal parameters
           (cddr exp)))) ; body
   (define (eval-definition exp env)
@@ -72,10 +72,14 @@
     "#definition")
   (put 'make-define keyword make-define)
   (put 'eval-dispatch keyword eval-definition)
+  (put 'definition-variable keyword definition-variable)
+  (put 'definition-value keyword definition-value)
   "installed definition")
 
 (install-definition)
 (define make-define (get 'make-define 'define))
+(define definition-variable (get 'definition-variable 'define))
+(define definition-value (get 'definition-value 'define))
 
 
 ;;;undefine
@@ -269,6 +273,39 @@
              env))))
 
 ;;;procedure
+; (define (scan-out-defines body)
+    
+;     (define (all-defines internal)
+;         (cond ((null? internal) '())
+;         ((tagged-list? (car internal) 'define)
+;          (cons (cons (definition-variable (car internal))
+;                      (list (definition-value (car internal))))
+;                (all-defines (cdr internal))))
+;         (else (all-defines (cdr internal)))))
+    
+;     (define (value-exprs internal)
+;         (cond ((null? internal) '())
+;         ((tagged-list? (car internal) 'define)
+;          (value-exprs (cdr internal)))
+;         (else (cons (car internal)
+;                     (value-exprs (cdr internal))))))
+    
+;     (let ((defines (all-defines body))
+;           (values (value-exprs  body)))
+;       (if (null? defines)
+;           body
+;           (list (make-let
+;                   (map (lambda (p)
+;                          (list (car p)
+;                                '*unassigned*))
+;                        defines)
+;                   (sequence->exp
+;                    (append (map (lambda (p)
+;                                   (list 'set! (car p) (cadr p)))
+;                                 defines)
+;                            values)))))))
+; (define (make-procedure parameters body env)
+;   (list 'procedure parameters (scan-out-defines body) env))
 (define (make-procedure parameters body env)
   (list 'procedure parameters body env))
 (define (compound-procedure? p)

@@ -15,6 +15,7 @@
         (list 'load load)
         (list 'display display)
         (list '= =)
+        (list 'square (lambda (x) (* x x)))
         (list '> >)
         (list '< <)
         (list '+ + )
