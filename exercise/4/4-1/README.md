@@ -5,7 +5,7 @@
 课本上的代码，只修改了prompt。
 
 ## metacircular-improved：
-完成4.1节的习题后的求值器。
+完成到4.1.5节的习题后的求值器。
 
 ## 编译
 * 尝试用chicken scheme将scheme代码编译成c或可执行代码，未成功。 

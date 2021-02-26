@@ -240,29 +240,107 @@
 ; )
 ; (define exp2 '((lambda (x) (* x x)) x))
 
-; '(define fib
+; (define fib
 ;     (lambda (n)
 ;       (define (fib-iter a b count)
 ;           (if (= count 0)
 ;           b
 ;           (fib-iter (+ a b) a (- count 1))))
-;            (fib-iter 1 0 n)))
+;       (fib-iter 1 0 n)))
 
-; (define fib
-;     (lambda (n)
-;       (let ((fib-iter '*unassigned*))
-;         (set! fib-iter
-;               (lambda (a b count)
-;                 (if (= count 0)
-;                 b
-;                 (fib-iter (+ a b) a (- count 1)))))
-;         (fib-iter 1 0 n))))
+; ; (define fib
+; ;     (lambda (n)
+; ;       (let ((fib-iter '*unassigned*))
+; ;         (set! fib-iter
+; ;               (lambda (a b count)
+; ;                 (if (= count 0)
+; ;                 b
+; ;                 (fib-iter (+ a b) a (- count 1)))))
+; ;         (fib-iter 1 0 n))))
 
-; (define fib
-;     (lambda (n)
-;       (let fib-iter ((a 1) (b 0) (count n))
-;         (if (= count 0)
-;             b
-;             (fib-iter (+ a b) 
-;                   a 
-;                   (- count 1))))))
+; ; (define fib
+; ;     (lambda (n)
+; ;       (let fib-iter ((a 1) (b 0) (count n))
+; ;         (if (= count 0)
+; ;             b
+; ;             (fib-iter (+ a b) 
+; ;                   a 
+; ;                   (- count 1))))))
+
+; ; (let ((a 1))
+; ;   (define (f x)
+; ;     (define b (+ a x))
+; ;     (define a 5)
+; ;     (+ a b))
+; ;   (f 10))
+
+; ; (let ((a 1)
+; ;       (f '*unassigned))
+; ;   (set! f
+; ;         (lambda (x)
+; ;           (let ((b '*unassigned)
+; ;                 (a '*unassigned))
+; ;             (set! b (+ a x))
+; ;             (set! a 5)
+; ;             (+ a b))))
+; ;   (f 10))
+
+; (define (f x)
+;   (define (even? n)
+;     (if (= n 0)
+;         true
+;         (odd? (- n 1))))
+;   (define (odd? n)
+;     (if (= n 0)
+;         false
+;         (even? (- n 1))))
+;   (even? x))
+
+; (define (f x)
+;   (let ((even? '*unassigned)
+;         (odd? '*unassigned))
+;     (set! even?
+;           (lambda (n)
+;              (if (= n 0)
+;                  true
+;                  (odd? (- n 1)))))
+;     (set! odd?
+;           (lambda (n)
+;             (if (= n 0)
+;                 false
+;                 (even? (- n 1)))))
+;     (even? x)))
+
+;  (define (letrec? expr) (tagged-list? expr 'letrec)) 
+;  (define (letrec-inits expr) (cadr expr)) 
+;  (define (letrec-body expr) (cddr expr)) 
+;  (define (declare-variables expr) 
+;          (map (lambda (x) (list (car x) '*unassigned*)) (letrec-inits expr))) 
+;  (define (set-variables expr) 
+;          (map (lambda (x) (list 'set! (car x) (cadr x))) (letrec-inits expr))) 
+;  (define (letrec->let expr) 
+;          (list 'let (declare-variables expr)  
+;                 (make-begin (append (set-variables expr) (letrec-body expr)))))
+
+
+; (define (letrec->let exp)
+;   (let ((vars (letrec-binding-vars exp))
+;         (vals (letrec-binding-vals exp)))
+;     (make-let (make-unassigned-bindings vars)
+;               (append (make-set-clauses vars vals)
+;                       (letrec-body exp)))))
+
+; (define exp
+;   '(letrec
+;        ((even?
+;          (lambda (n)
+;            (if (= n 0)
+;                true
+;                (odd? (- n 1)))))
+;         (odd?
+;          (lambda (n)
+;            (if (= n 0)
+;                false
+;                (even? (- n 1))))))
+;      (even? 10))
+; )
