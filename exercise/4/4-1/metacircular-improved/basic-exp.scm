@@ -1,10 +1,7 @@
 (load "env-pair-frame.scm")
 
 
-(define apply-in-underlying-scheme apply)
-
-
-;;;number & string
+;;;number & string & bool
 (define (self-evaluating? exp)
   (cond ((number? exp) true)
         ((string? exp) true)

@@ -1,15 +1,3 @@
-(define (type-exp exp)
-  (if (null? exp)
-      '()
-      (car exp)))
-
-(define (tagged-list? exp tag)
-  (if (pair? exp)
-      (eq? (car exp) tag)
-      false))
-
-(define apply-in-underlying-scheme apply)
-
 (define (make-table)
   (let ((local-table (list '*table*)))
     (define (lookup key-1 key-2)
@@ -49,3 +37,15 @@
 (define operation-table (make-table))
 (define get (operation-table 'lookup-proc))
 (define put (operation-table 'insert-proc!))
+
+(define apply-in-underlying-scheme apply)
+
+(define (type-exp exp)
+  (if (null? exp)
+      '()
+      (car exp)))
+
+(define (tagged-list? exp tag)
+  (if (pair? exp)
+      (eq? (car exp) tag)
+      false))
