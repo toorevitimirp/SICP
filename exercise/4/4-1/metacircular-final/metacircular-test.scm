@@ -52,23 +52,35 @@
                 'ok)
                (else 'fail))                         ;ok
         '(+ (* x x) (+ x 3))                         ;9
-        '(begin (+ 1 1) (+ 2 2))                     ;4                    
+        '(begin (+ 1 1) (+ 2 2))                     ;4
+        '(let ((x 7) (y 8)) (+ x y) (* x y))         ;56
+        '(define (fib n)
+           (let fib-iter ((a 1) (b 0) (count n))
+             (if (= count 0)
+                 b
+                 (fib-iter (+ a b) 
+                           a 
+                           (- count 1)))))          ;#definition
+        '(fib 10)                                   ;55
         ))
 
 (define res
   (list #t
         #f
         '(1 2 3 4 5)
-        'ok
-        'ok
+        "#definition"
+        "#assignment"
         4
-        'ok
+        "#definition"
         '(a b c d e f)
         'ok
         #t
         'ok
         9
         4
+        56
+        "#definition"
+        55
         ))
 
 

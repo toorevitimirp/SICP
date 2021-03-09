@@ -22,6 +22,8 @@
           (begin-actions exp)))
         ((cond? exp) 
          (analyze (cond->if exp)))
+        ((let? exp)
+         (analyze (let->combination exp)))
         ((application? exp) 
          (analyze-application exp))
         (else

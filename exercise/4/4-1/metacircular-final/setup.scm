@@ -18,6 +18,8 @@
         (list 'square (lambda (x) (* x x)))
         (list '> >)
         (list '< <)
+        (list '<= <=)
+        (list '>= >=)
         (list '+ + )
         (list '- - )
         (list '* * )

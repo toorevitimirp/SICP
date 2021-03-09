@@ -48,7 +48,7 @@
     (lambda (env)
       (set-variable-value! 
        var (vproc env) env)
-      'ok)))
+      "#assignment")))
 
 
 ;;;definition
@@ -67,13 +67,16 @@
        (cdadr exp)   ; formal parameters
        (cddr exp)))) ; body
 
+(define (make-define name value)
+    (list 'define name value))
+
 (define (analyze-definition exp)
   (let ((var (definition-variable exp))
         (vproc (analyze 
                 (definition-value exp))))
     (lambda (env)
       (define-variable! var (vproc env) env)
-      'ok)))
+      "#definition")))
 
 
 ;;;lambda
@@ -139,19 +142,32 @@
 
 (define (make-begin seq) (cons 'begin seq))
 
+; (define (analyze-sequence exps)
+;   (define (sequentially proc1 proc2)
+;     (lambda (env) (proc1 env) (proc2 env)))
+;   (define (loop first-proc rest-procs)
+;     (if (null? rest-procs)
+;         first-proc
+;         (loop (sequentially first-proc 
+;                             (car rest-procs))
+;               (cdr rest-procs))))
+;   (let ((procs (map analyze exps)))
+;     (if (null? procs)
+;         (error "Empty sequence: ANALYZE"))
+;     (loop (car procs) (cdr procs))))
 (define (analyze-sequence exps)
-  (define (sequentially proc1 proc2)
-    (lambda (env) (proc1 env) (proc2 env)))
-  (define (loop first-proc rest-procs)
-    (if (null? rest-procs)
-        first-proc
-        (loop (sequentially first-proc 
-                            (car rest-procs))
-              (cdr rest-procs))))
+  (define (execute-sequence procs env)
+    (cond ((null? (cdr procs)) 
+           ((car procs) env))
+          (else ((car procs) env)
+                (execute-sequence 
+                 (cdr procs) env))))
   (let ((procs (map analyze exps)))
     (if (null? procs)
-        (error "Empty sequence: ANALYZE"))
-    (loop (car procs) (cdr procs))))
+        (error "Empty sequence: 
+                ANALYZE"))
+    (lambda (env) 
+      (execute-sequence procs env))))
 
 
 ;;;bool
@@ -179,6 +195,9 @@
 (define (first-operand ops) (car ops))
 
 (define (rest-operands ops) (cdr ops))
+
+(define (make-application-call proc-name args)
+  (cons proc-name args))
 
 (define (analyze-application exp)
   (let ((fproc (analyze (operator exp)))

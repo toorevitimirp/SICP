@@ -11,11 +11,11 @@
 (define (driver-loop in-count out-count)
   (prompt-for-input in-count input-prompt)
   (let ((input (pretty-read)))
-    (let ((output 
-           (eval_ input 
-                 the-global-environment)))
-      (announce-output out-count output-prompt)
-      (user-print output)))
+    (let ((start-time (runtime)))
+      (let ((output
+             (eval_ input the-global-environment)))
+        (announce-output out-count output-prompt)
+        (user-print output start-time))))
   (driver-loop (+ in-count 1) (+ out-count 1)))
 
 (define (prompt-for-input in-count string)
@@ -37,14 +37,17 @@
   (newline)
   )
 
-(define (user-print object)
+(define (user-print object start-time)
   (if (compound-procedure? object)
       (display 
        (list 'compound-procedure
              (procedure-parameters object)
              (procedure-body object)
              '<procedure-env>))
-      (display object)
-      ))
+      (display object))
+  (display "\nevaluating time: ")
+  (display (- (runtime) start-time))
+  (display "s\n")
+  )
 
 (driver-loop 0 0)

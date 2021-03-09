@@ -43,3 +43,43 @@
                              (sequence->exp
                               (cond-actions first))
                              (expand-clauses rest)))))))
+
+
+;;;let
+(define (let? exp)
+  (tagged-list? exp 'let))
+
+(define (named-let? exp) (symbol? (cadr exp)))
+
+(define (let-clauses exp)
+  (if (named-let? exp)
+      (caddr exp)
+      (cadr exp)))
+
+(define (let-body exp)
+  (if (named-let? exp)
+      (cdddr exp)
+      (cddr exp)))
+
+(define (first-clause clauses) (car clauses))
+
+(define (rest-clauses clauses) (cdr clauses))
+
+(define (clause-var clause) (car clause))
+
+(define (clause-exp clause) (cadr clause))
+
+(define (let->combination exp)
+  (let ((clauses (let-clauses exp))
+        (body (let-body exp)))
+    (let ((vars (map clause-var clauses))
+          (exps (map clause-exp clauses)))
+      (if (named-let? exp)
+          (list
+           (make-lambda
+             '()
+             (list (sequence->exp
+                    (list (make-define (cadr exp)
+                                       (make-lambda vars body))
+                          (make-application-call (cadr exp) exps))))))
+          (cons (make-lambda vars body) exps)))))
