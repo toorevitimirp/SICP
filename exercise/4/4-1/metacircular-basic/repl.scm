@@ -8,15 +8,15 @@
   (display "> ")
   (read))
 
-(define (driver-loop in-count out-count)
+(define (driver-loop in-count)
   (prompt-for-input in-count input-prompt)
   (let ((input (pretty-read)))
     (let ((output 
            (eval input 
                  the-global-environment)))
-      (announce-output out-count output-prompt)
+      (announce-output in-count output-prompt)
       (user-print output)))
-  (driver-loop (+ in-count 1) (+ out-count 1)))
+  (driver-loop (+ in-count 1)))
 
 (define (prompt-for-input in-count string)
   (newline)
@@ -46,4 +46,4 @@
       (display object)
       ))
 
-(driver-loop 0 0)
+(driver-loop 0)
