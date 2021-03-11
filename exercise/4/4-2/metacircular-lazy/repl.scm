@@ -1,8 +1,8 @@
 (load "setup.scm")
 ; (define input-prompt  ";;; M-Eval input:")
 ; (define output-prompt ";;; M-Eval value:")
-(define input-prompt  "λ[")
-(define output-prompt "]=>  ")
+(define input-prompt  "λ-lazy[")
+(define output-prompt "=>[")
 
 (define (pretty-read)
   (display "> ")
@@ -11,11 +11,11 @@
 (define (driver-loop in-count)
   (prompt-for-input in-count input-prompt)
   (let ((input (pretty-read)))
-    (let ((start-time (runtime)))
-      (let ((output
-             (eval_ input the-global-environment)))
-        (announce-output in-count output-prompt)
-        (user-print output start-time))))
+    (let ((output 
+           (actual-value input 
+                         the-global-environment)))
+      (announce-output in-count output-prompt)
+      (user-print output)))
   (driver-loop (+ in-count 1)))
 
 (define (prompt-for-input in-count string)
@@ -31,24 +31,19 @@
 
 (define (announce-output out-count string)
   (newline)
-  (display "[")
-  (display out-count)
   (display string)
-  (newline)
-  )
+  (display out-count)
+  (display "]: ")
+  (newline))
 
-(define (user-print object start-time)
+(define (user-print object)
   (if (compound-procedure? object)
       (display 
        (list 'compound-procedure
              (procedure-parameters object)
              (procedure-body object)
              '<procedure-env>))
-      (display object))
-  ; (display "\nevaluating time: ")
-  (newline)
-  (display (- (runtime) start-time))
-  (display "s\n")
-  )
+      (display object)
+      ))
 
 (driver-loop 0)
